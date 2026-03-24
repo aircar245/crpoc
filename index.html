@@ -2,22 +2,466 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>我的测试网站</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend Hub - 前端学习交流社区</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { text-align: center; padding-top: 100px; font-family: Arial; }
-        h1 { color: #2c3e50; }
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --accent-primary: #8b5cf6;
+            --accent-secondary: #06b6d4;
+            --text-primary: #f1f5f9;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* 导航栏 */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .cta-btn {
+            padding: 0.7rem 1.5rem;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+        }
+
+        /* 英雄区 */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 1rem;
+            position: relative;
+            padding-top: 80px;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #fff 0%, var(--accent-primary) 50%, var(--accent-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin-bottom: 2rem;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-secondary {
+            padding: 0.9rem 2rem;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            color: var(--text-primary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--accent-secondary);
+        }
+
+        /* 浮动背景装饰 */
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 10s infinite ease-in-out;
+        }
+
+        .shape-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--accent-primary);
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            width: 300px;
+            height: 300px;
+            background: var(--accent-secondary);
+            bottom: 10%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(5deg); }
+        }
+
+        /* 内容区域通用 */
+        section {
+            padding: 6rem 5%;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+        }
+
+        /* 学习资源卡片 */
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s, border-color 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .card h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .card-tag {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 0.3rem 0.8rem;
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--accent-primary);
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* 社区动态 */
+        .community-feed {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .post {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .post-content h4 {
+            margin-bottom: 0.3rem;
+        }
+
+        .post-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.8rem;
+        }
+
+        .post-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .post-actions span {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .post-actions span:hover {
+            color: var(--accent-secondary);
+        }
+
+        /* 页脚 */
+        footer {
+            text-align: center;
+            padding: 3rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero h1 { font-size: 2.5rem; }
+            .hero-btns { flex-direction: column; width: 100%; padding: 0 1rem; }
+            .cta-btn, .btn-secondary { width: 100%; }
+            .post { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
-    <h1>Hello Netlify并非？！! ✅</h1>
-    <p>f*cking hacker!never wanna steal my website!!!</p>
-    <button>Click me!</button>
+
+    <!-- 导航栏 -->
+    <nav>
+        <div class="logo">Frontend Hub</div>
+        <ul class="nav-links">
+            <li><a href="#resources">学习路径</a></li>
+            <li><a href="#community">技术交流</a></li>
+            <li><a href="#">实战项目</a></li>
+            <li><a href="#">关于我们</a></li>
+        </ul>
+        <button class="cta-btn">立即加入</button>
+    </nav>
+
+    <!-- 英雄区 -->
+    <section class="hero">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+        </div>
+        <h1>探索前端的 <span class="gradient-text">无限可能</span></h1>
+        <p>与数万开发者一起，从 HTML 到 React，从菜鸟到大神。在这里，代码不仅是工具，更是艺术。</p>
+        <div class="hero-btns">
+            <button class="cta-btn"><i class="fas fa-rocket"></i> 开始学习</button>
+            <button class="btn-secondary"><i class="fab fa-github"></i> 查看源码</button>
+        </div>
+    </section>
+
+    <!-- 学习资源 -->
+    <section id="resources">
+        <div class="section-header">
+            <h2>精选学习路径</h2>
+            <p>由浅入深，系统化掌握现代前端技术栈</p>
+        </div>
+        <div class="resources-grid">
+            <div class="card">
+                <div class="card-icon"><i class="fab fa-html5"></i></div>
+                <h3>基础筑基</h3>
+                <p>HTML5 语义化标签、CSS3  Flexbox/Grid 布局、原生 JavaScript 核心。</p>
+                <span class="card-tag">入门级</span>
+            </div>
+            <div class="card">
+                <div class="card-icon"><i class="fab fa-react"></i></div>
+                <h3>框架进阶</h3>
+                <p>深入 React/Vue 生态，掌握状态管理、路由、组件化开发思维。</p>
+                <span class="card-tag">进阶级</span>
+            </div>
+            <div class="card">
+                <div class="card-icon"><i class="fas fa-cube"></i></div>
+                <h3>工程化与性能</h3>
+                <p>Webpack/Vite 构建、TypeScript 类型系统、前端性能优化方案。</p>
+                <span class="card-tag">高级</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- 社区交流 -->
+    <section id="community" style="background: rgba(255,255,255,0.02);">
+        <div class="section-header">
+            <h2>社区热门讨论</h2>
+            <p>分享你的代码，解答他人的疑惑</p>
+        </div>
+        <div class="community-feed">
+            <div class="post">
+                <div class="avatar">张</div>
+                <div class="post-content">
+                    <h4>Vue3 组合式 API 真香现场</h4>
+                    <div class="post-meta">2小时前 · Vue.js</div>
+                    <p>用了 setup 语法糖之后，代码逻辑复用简直不要太爽！以前 mixin 里的变量来源都找不到，现在清晰多了。有没有同感的？</p>
+                    <div class="post-actions">
+                        <span><i class="far fa-heart"></i> 128</span>
+                        <span><i class="far fa-comment"></i> 45</span>
+                    </div>
+                </div>
+            </div>
+            <div class="post">
+                <div class="avatar">李</div>
+                <div class="post-content">
+                    <h4>求助：这个 CSS 动画怎么优化？</h4>
+                    <div class="post-meta">5小时前 · CSS</div>
+                    <p>写了一个视差滚动效果，在手机上有点掉帧。已经加了 transform: translateZ(0) 开启 GPU 加速，还有什么其他黑科技吗？</p>
+                    <div class="post-actions">
+                        <span><i class="far fa-heart"></i> 82</span>
+                        <span><i class="far fa-comment"></i> 67</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+        <p>&copy; 2024 Frontend Hub. Built with ❤️ and lots of coffee.</p>
+    </footer>
+
     <script>
-        const btn = document.querySelector('button')
-        btn.addEventListener('click', () => {
-            location.href = 'https://www.baidu.com'
-        })
-            
+        // 简单的平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // 导航栏滚动效果
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.5)';
+            } else {
+                nav.style.boxShadow = 'none';
+            }
+        });
     </script>
 </body>
 </html>
