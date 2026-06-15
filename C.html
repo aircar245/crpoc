@@ -1,11 +1,394 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C语言数据结构</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',sans-serif;background:#0f1117;color:#e0e0e0;scroll-behavior:smooth}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(15,17,23,.92);backdrop-filter:blur(8px);display:flex;align-items:center;padding:0 32px;height:56px;border-bottom:1px solid #1e2230}
+    nav .logo{font-size:1.1rem;font-weight:700;color:#58a6ff;letter-spacing:1px}
+    nav a{margin-left:28px;color:#8b949e;text-decoration:none;font-size:.9rem;transition:color .2s}
+    nav a:hover{color:#58a6ff}
+    #home{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px 40px}
+    #home h1{font-size:2.6rem;font-weight:800;text-align:center;background:linear-gradient(135deg,#58a6ff,#bc8cff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px}
+    #home>p{color:#8b949e;font-size:1rem;margin-bottom:56px;text-align:center}
+    .cards{display:flex;flex-direction:column;gap:24px;width:100%;max-width:540px}
+    .card{border-radius:16px;padding:36px 32px;cursor:pointer;transition:transform .25s,box-shadow .25s;text-decoration:none;display:block}
+    .card:hover{transform:translateY(-6px)}
+    .card.c1{background:linear-gradient(135deg,#1a2a4a,#1e3a5f);border:1px solid #2d4a7a;box-shadow:0 4px 24px rgba(88,166,255,.15)}
+    .card.c2{background:linear-gradient(135deg,#2a1a4a,#3e1e5f);border:1px solid #5a2d8a;box-shadow:0 4px 24px rgba(188,140,255,.15)}
+    .card .icon{font-size:2.2rem;margin-bottom:12px}
+    .card h2{font-size:1.25rem;font-weight:700;color:#fff;margin-bottom:8px}
+    .card p{font-size:.88rem;color:#8b949e;line-height:1.6}
+    .card .arrow{margin-top:18px;font-size:.85rem;color:#58a6ff;font-weight:600}
+    .card.c2 .arrow{color:#bc8cff}
+    section{padding:90px 24px 60px;max-width:900px;margin:0 auto}
+    section h2.sec-title,#demo h2.sec-title{font-size:1.7rem;font-weight:700;margin-bottom:8px;color:#fff}
+    .sec-line{width:48px;height:3px;background:linear-gradient(90deg,#58a6ff,#bc8cff);border-radius:2px;margin-bottom:36px}
+    .basics-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px}
+    .b-card{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:24px}
+    .b-card h3{font-size:1rem;font-weight:600;color:#58a6ff;margin-bottom:10px}
+    .b-card p{font-size:.84rem;color:#8b949e;line-height:1.65}
+    .b-card code{background:#0d1117;border:1px solid #21262d;border-radius:4px;padding:1px 5px;font-size:.8rem;color:#f0883e}
+    #demo{padding:90px 24px 80px;max-width:960px;margin:0 auto}
+    .tabs{display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap}
+    .tab-btn{padding:8px 20px;border-radius:8px;border:1px solid #21262d;background:#161b22;color:#8b949e;cursor:pointer;font-size:.88rem;transition:all .2s}
+    .tab-btn.active{background:linear-gradient(135deg,#1a2a4a,#2d4a7a);border-color:#58a6ff;color:#58a6ff;font-weight:600}
+    .demo-wrap{display:none}
+    .demo-wrap.active{display:block}
+    .tree-area{background:#0d1117;border:1px solid #21262d;border-radius:12px;padding:16px;overflow:auto;margin-bottom:20px}
+    svg.tree{display:block;margin:0 auto}
+    .node-circle{fill:#1a2a4a;stroke:#2d4a7a;stroke-width:2;transition:fill .4s,stroke .4s}
+    .node-circle.visited{fill:#1a4a2a;stroke:#2d8a4a}
+    .node-circle.active{fill:#4a3a10;stroke:#f0883e}
+    .node-circle.stacked{fill:#2a1a4a;stroke:#8a4abd}
+    .node-text{fill:#e0e0e0;font-size:14px;font-weight:600;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+    .edge{stroke:#21262d;stroke-width:2}
+    .stack-area{background:#0d1117;border:1px solid #21262d;border-radius:12px;padding:16px;margin-bottom:16px}
+    .stack-area h4{font-size:.85rem;color:#8b949e;margin-bottom:10px}
+    .stack-vis{display:flex;flex-direction:column-reverse;gap:6px;min-height:40px}
+    .stack-item{background:#2a1a4a;border:1px solid #5a2d8a;border-radius:6px;padding:6px 14px;font-size:.88rem;color:#bc8cff;text-align:center;width:fit-content;min-width:56px}
+    .result-area{background:#0d1117;border:1px solid #21262d;border-radius:12px;padding:16px;margin-bottom:16px}
+    .result-area h4{font-size:.85rem;color:#8b949e;margin-bottom:10px}
+    .result-seq{display:flex;gap:8px;flex-wrap:wrap;min-height:36px}
+    .res-node{background:#1a4a2a;border:1px solid #2d8a4a;border-radius:6px;padding:5px 14px;font-size:.88rem;color:#3fb950;font-weight:600}
+    .log-area{background:#0d1117;border:1px solid #21262d;border-radius:12px;padding:16px;margin-bottom:16px;max-height:160px;overflow-y:auto}
+    .log-area h4{font-size:.85rem;color:#8b949e;margin-bottom:8px}
+    .log-line{font-size:.8rem;color:#8b949e;padding:3px 0;border-bottom:1px solid #161b22}
+    .log-line span{color:#58a6ff}
+    .log-line.highlight span{color:#f0883e}
+    .algo-code{background:#0d1117;border:1px solid #21262d;border-radius:12px;padding:16px;margin-bottom:16px;overflow-x:auto}
+    .algo-code pre{font-size:.8rem;color:#8b949e;line-height:1.7}
+    .kw{color:#ff7b72}.fn{color:#d2a8ff}.cm{color:#484f58;font-style:italic}
+    .controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+    .btn{padding:9px 20px;border-radius:8px;border:none;cursor:pointer;font-size:.88rem;font-weight:600;transition:all .2s}
+    .btn-primary{background:linear-gradient(135deg,#1a4a6a,#2d7abf);color:#fff}
+    .btn-primary:hover{filter:brightness(1.2)}
+    .btn-secondary{background:#161b22;border:1px solid #21262d;color:#8b949e}
+    .btn-secondary:hover{color:#fff;border-color:#58a6ff}
+    .speed-wrap{display:flex;align-items:center;gap:8px;font-size:.82rem;color:#8b949e}
+    .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.78rem;color:#8b949e;margin-bottom:12px}
+    .legend-item{display:flex;align-items:center;gap:6px}
+    .legend-dot{width:14px;height:14px;border-radius:50%;border:2px solid}
+    .ld-default{background:#1a2a4a;border-color:#2d4a7a}
+    .ld-active{background:#4a3a10;border-color:#f0883e}
+    .ld-stacked{background:#2a1a4a;border-color:#8a4abd}
+    .ld-visited{background:#1a4a2a;border-color:#2d8a4a}
+    footer{text-align:center;padding:32px;color:#484f58;font-size:.8rem;border-top:1px solid #21262d}
+  </style>
 </head>
 <body>
-    
+<nav>
+  <span class="logo">C语言数据结构</span>
+  <a href="#home">首页</a>
+  <a href="#basics">基础知识</a>
+  <a href="#demo">代码演示</a>
+</nav>
+
+<div id="home">
+  <h1>C语言数据结构</h1>
+  <p>可视化学习 &middot; 交互演示 &middot; 深入理解</p>
+  <div class="cards">
+    <a class="card c1" href="#basics">
+      <div class="icon">📖</div>
+      <h2>基础知识讲解</h2>
+      <p>从零开始理解栈、队列、链表、二叉树等核心数据结构的概念与原理。</p>
+      <div class="arrow">前往学习 &rarr;</div>
+    </a>
+    <a class="card c2" href="#demo">
+      <div class="icon">⚙️</div>
+      <h2>代码演示区</h2>
+      <p>交互式动画演示二叉树的先序、中序、后序遍历，直观展示栈的压入与弹出过程。</p>
+      <div class="arrow">开始演示 &rarr;</div>
+    </a>
+  </div>
+</div>
+
+<section id="basics">
+  <h2 class="sec-title">基础知识讲解</h2>
+  <div class="sec-line"></div>
+  <div class="basics-grid">
+    <div class="b-card"><h3>二叉树</h3><p>每个节点最多两个子节点的树形结构。C 语言用 <code>struct Node</code> 与指针 <code>left</code>、<code>right</code> 表示。</p></div>
+    <div class="b-card"><h3>栈（Stack）</h3><p>后进先出（LIFO）的线性结构。非递归遍历时借助栈保存待处理节点，核心操作：<code>push</code> 压栈、<code>pop</code> 弹栈。</p></div>
+    <div class="b-card"><h3>先序遍历</h3><p>访问顺序：<strong>根 &rarr; 左 &rarr; 右</strong>。将根压栈，循环弹出并访问，再依次将右子、左子压栈。</p></div>
+    <div class="b-card"><h3>中序遍历</h3><p>访问顺序：<strong>左 &rarr; 根 &rarr; 右</strong>。沿左路将节点压栈，栈空弹出访问，再转向右子树。</p></div>
+    <div class="b-card"><h3>后序遍历</h3><p>访问顺序：<strong>左 &rarr; 右 &rarr; 根</strong>。双栈法：S1 压出的节点全部按顺序压入 S2，S2 弹出顺序即后序。</p></div>
+    <div class="b-card"><h3>时间复杂度</h3><p>三种遍历均为 <code>O(n)</code>，每个节点恰好被访问一次。空间复杂度平均 <code>O(log n)</code>，退化链最坏 <code>O(n)</code>。</p></div>
+  </div>
+</section>
+
+<div id="demo">
+  <h2 class="sec-title">代码演示区</h2>
+  <div class="sec-line"></div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('pre',this)">先序遍历（根→左→右）</button>
+    <button class="tab-btn" onclick="switchTab('in',this)">中序遍历（左→根→右）</button>
+    <button class="tab-btn" onclick="switchTab('post',this)">后序遍历（左→右→根）</button>
+  </div>
+
+  <div id="tab-pre" class="demo-wrap active">
+    <div class="algo-code"><pre><span class="cm">// 非递归先序遍历（栈实现）</span>
+<span class="kw">void</span> <span class="fn">preOrder</span>(Node *root) {
+    Stack s; init(&amp;s);
+    <span class="kw">if</span> (root) push(&amp;s, root);
+    <span class="kw">while</span> (!isEmpty(&amp;s)) {
+        Node *p = pop(&amp;s);               <span class="cm">// 弹出</span>
+        visit(p);                        <span class="cm">// 访问根</span>
+        <span class="kw">if</span> (p-&gt;right) push(&amp;s, p-&gt;right); <span class="cm">// 右子先压</span>
+        <span class="kw">if</span> (p-&gt;left)  push(&amp;s, p-&gt;left);  <span class="cm">// 左子后压（先弹出）</span>
+    }
+}</pre></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot ld-default"></div>未访问</div>
+      <div class="legend-item"><div class="legend-dot ld-stacked"></div>在栈中</div>
+      <div class="legend-item"><div class="legend-dot ld-active"></div>当前处理</div>
+      <div class="legend-item"><div class="legend-dot ld-visited"></div>已访问</div>
+    </div>
+    <div class="tree-area"><svg class="tree" id="svg-pre" width="520" height="260"></svg></div>
+    <div class="stack-area"><h4>栈内容（顶部 = 栈顶）</h4><div class="stack-vis" id="stack-pre"></div></div>
+    <div class="result-area"><h4>遍历结果</h4><div class="result-seq" id="result-pre"></div></div>
+    <div class="log-area"><h4>操作日志</h4><div id="log-pre"></div></div>
+    <div class="controls">
+      <button class="btn btn-primary" onclick="startDemo('pre')">▶ 开始/重置</button>
+      <button class="btn btn-secondary" onclick="stepDemo('pre')">单步</button>
+      <button class="btn btn-secondary" onclick="autoDemo('pre')">自动播放</button>
+      <div class="speed-wrap">速度<input type="range" min="200" max="2000" value="800" step="100" id="speed-pre" oninput="updateSpeed('pre',this.value)"><span id="speed-pre-lbl">800ms</span></div>
+    </div>
+  </div>
+
+  <div id="tab-in" class="demo-wrap">
+    <div class="algo-code"><pre><span class="cm">// 非递归中序遍历（栈实现）</span>
+<span class="kw">void</span> <span class="fn">inOrder</span>(Node *root) {
+    Stack s; init(&amp;s);
+    Node *p = root;
+    <span class="kw">while</span> (p || !isEmpty(&amp;s)) {
+        <span class="kw">while</span> (p) { push(&amp;s, p); p = p-&gt;left; } <span class="cm">// 沿左路压栈</span>
+        p = pop(&amp;s);                              <span class="cm">// 弹出</span>
+        visit(p);                                 <span class="cm">// 访问</span>
+        p = p-&gt;right;                             <span class="cm">// 转右子树</span>
+    }
+}</pre></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot ld-default"></div>未访问</div>
+      <div class="legend-item"><div class="legend-dot ld-stacked"></div>在栈中</div>
+      <div class="legend-item"><div class="legend-dot ld-active"></div>当前处理</div>
+      <div class="legend-item"><div class="legend-dot ld-visited"></div>已访问</div>
+    </div>
+    <div class="tree-area"><svg class="tree" id="svg-in" width="520" height="260"></svg></div>
+    <div class="stack-area"><h4>栈内容（顶部 = 栈顶）</h4><div class="stack-vis" id="stack-in"></div></div>
+    <div class="result-area"><h4>遍历结果</h4><div class="result-seq" id="result-in"></div></div>
+    <div class="log-area"><h4>操作日志</h4><div id="log-in"></div></div>
+    <div class="controls">
+      <button class="btn btn-primary" onclick="startDemo('in')">▶ 开始/重置</button>
+      <button class="btn btn-secondary" onclick="stepDemo('in')">单步</button>
+      <button class="btn btn-secondary" onclick="autoDemo('in')">自动播放</button>
+      <div class="speed-wrap">速度<input type="range" min="200" max="2000" value="800" step="100" id="speed-in" oninput="updateSpeed('in',this.value)"><span id="speed-in-lbl">800ms</span></div>
+    </div>
+  </div>
+
+  <div id="tab-post" class="demo-wrap">
+    <div class="algo-code"><pre><span class="cm">// 非递归后序遍历（双栈法）</span>
+<span class="kw">void</span> <span class="fn">postOrder</span>(Node *root) {
+    Stack s1, s2; init(&amp;s1); init(&amp;s2);
+    <span class="kw">if</span> (root) push(&amp;s1, root);
+    <span class="kw">while</span> (!isEmpty(&amp;s1)) {
+        Node *p = pop(&amp;s1);
+        push(&amp;s2, p);                    <span class="cm">// 压入辅助栈</span>
+        <span class="kw">if</span> (p-&gt;left)  push(&amp;s1, p-&gt;left);
+        <span class="kw">if</span> (p-&gt;right) push(&amp;s1, p-&gt;right);
+    }
+    <span class="kw">while</span> (!isEmpty(&amp;s2)) visit(pop(&amp;s2)); <span class="cm">// 逆序弹出即后序</span>
+}</pre></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot ld-default"></div>未访问</div>
+      <div class="legend-item"><div class="legend-dot ld-stacked"></div>S1工作栈</div>
+      <div class="legend-item"><div class="legend-dot ld-active"></div>当前处理</div>
+      <div class="legend-item"><div class="legend-dot ld-visited"></div>已访问</div>
+    </div>
+    <div class="tree-area"><svg class="tree" id="svg-post" width="520" height="260"></svg></div>
+    <div class="stack-area"><h4>S1 工作栈</h4><div class="stack-vis" id="stack-post"></div></div>
+    <div class="stack-area"><h4>S2 辅助栈</h4><div class="stack-vis" id="stack2-post"></div></div>
+    <div class="result-area"><h4>遍历结果</h4><div class="result-seq" id="result-post"></div></div>
+    <div class="log-area"><h4>操作日志</h4><div id="log-post"></div></div>
+    <div class="controls">
+      <button class="btn btn-primary" onclick="startDemo('post')">▶ 开始/重置</button>
+      <button class="btn btn-secondary" onclick="stepDemo('post')">单步</button>
+      <button class="btn btn-secondary" onclick="autoDemo('post')">自动播放</button>
+      <div class="speed-wrap">速度<input type="range" min="200" max="2000" value="800" step="100" id="speed-post" oninput="updateSpeed('post',this.value)"><span id="speed-post-lbl">800ms</span></div>
+    </div>
+  </div>
+</div>
+
+<footer>C语言数据结构可视化演示 &copy; 2024</footer>
+
+<script>
+const TREE={
+  nodes:[
+    {id:1,val:'A',x:260,y:40},
+    {id:2,val:'B',x:140,y:110},
+    {id:3,val:'C',x:380,y:110},
+    {id:4,val:'D',x:80,y:200},
+    {id:5,val:'E',x:200,y:200},
+    {id:6,val:'F',x:320,y:200},
+    {id:7,val:'G',x:440,y:200},
+  ],
+  edges:[{from:1,to:2},{from:1,to:3},{from:2,to:4},{from:2,to:5},{from:3,to:6},{from:3,to:7}],
+  left:{1:2,2:4,3:6},
+  right:{1:3,2:5,3:7},
+};
+function nodeById(id){return TREE.nodes.find(n=>n.id===id);}
+
+function renderSVG(svgId){
+  const svg=document.getElementById(svgId);svg.innerHTML='';
+  TREE.edges.forEach(e=>{
+    const a=nodeById(e.from),b=nodeById(e.to);
+    const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',a.x);line.setAttribute('y1',a.y);
+    line.setAttribute('x2',b.x);line.setAttribute('y2',b.y);
+    line.setAttribute('class','edge');svg.appendChild(line);
+  });
+  TREE.nodes.forEach(n=>{
+    const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',n.x);c.setAttribute('cy',n.y);c.setAttribute('r',22);
+    c.setAttribute('class','node-circle');c.setAttribute('id',`${svgId}-n${n.id}`);
+    const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',n.x);t.setAttribute('y',n.y);
+    t.setAttribute('class','node-text');t.textContent=n.val;
+    g.appendChild(c);g.appendChild(t);svg.appendChild(g);
+  });
+}
+function setNode(svgId,id,state){
+  const c=document.getElementById(`${svgId}-n${id}`);
+  if(c) c.className.baseVal='node-circle '+(state||'');
+}
+
+const STATE={},TIMER={},SPEEDS={};
+
+function buildPreSteps(){
+  const steps=[],stack=[],visited=[],result=[];
+  function snap(msg,activeId,hl){
+    steps.push({stack:[...stack],visited:[...visited],result:[...result],activeId,msg,hl,s2:null});
+  }
+  snap('初始化：将根节点 A 压栈',null,false);
+  stack.push(1);snap('push(A) → 栈:[A]',1,false);
+  while(stack.length){
+    const id=stack.pop();
+    snap(`pop() 弹出 ${nodeById(id).val}`,id,true);
+    visited.push(id);result.push(id);
+    snap(`visit(${nodeById(id).val}) 访问完成`,id,true);
+    const r=TREE.right[id],l=TREE.left[id];
+    if(r){stack.push(r);snap(`push(${nodeById(r).val}) 右子压栈`,r,false);}
+    if(l){stack.push(l);snap(`push(${nodeById(l).val}) 左子压栈`,l,false);}
+  }
+  snap('先序遍历完成！ '+result.map(i=>nodeById(i).val).join('→'),null,false);
+  return steps;
+}
+function buildInSteps(){
+  const steps=[],stack=[],visited=[],result=[];
+  function snap(msg,activeId,hl){
+    steps.push({stack:[...stack],visited:[...visited],result:[...result],activeId,msg,hl,s2:null});
+  }
+  let p=1;
+  snap('初始化：p 指向根节点 A',p,false);
+  while(p||stack.length){
+    while(p){
+      stack.push(p);snap(`push(${nodeById(p).val}) 沿左路压栈`,p,false);
+      p=TREE.left[p]||null;
+    }
+    const id=stack.pop();
+    snap(`pop() 弹出 ${nodeById(id).val}`,id,true);
+    visited.push(id);result.push(id);
+    snap(`visit(${nodeById(id).val}) 访问完成`,id,true);
+    p=TREE.right[id]||null;
+    if(p) snap(`p 转向右子 ${nodeById(p).val}`,p,false);
+  }
+  snap('中序遍历完成！ '+result.map(i=>nodeById(i).val).join('→'),null,false);
+  return steps;
+}
+function buildPostSteps(){
+  const steps=[],s1=[],s2=[],visited=[],result=[];
+  function snap(msg,activeId,hl){
+    steps.push({stack:[...s1],visited:[...visited],result:[...result],activeId,msg,hl,s2:[...s2]});
+  }
+  snap('初始化：根节点 A 压入 S1',null,false);
+  s1.push(1);snap('S1.push(A)',1,false);
+  while(s1.length){
+    const id=s1.pop();
+    snap(`S1.pop() 弹出 ${nodeById(id).val}，压入 S2`,id,true);
+    s2.push(id);snap(`S2.push(${nodeById(id).val})`,id,true);
+    const l=TREE.left[id],r=TREE.right[id];
+    if(l){s1.push(l);snap(`S1.push(${nodeById(l).val}) 左子`,l,false);}
+    if(r){s1.push(r);snap(`S1.push(${nodeById(r).val}) 右子`,r,false);}
+  }
+  snap('S1为空，开始从 S2 弹出访问',null,false);
+  while(s2.length){
+    const id=s2.pop();
+    visited.push(id);result.push(id);
+    snap(`visit(${nodeById(id).val}) 访问完成`,id,true);
+  }
+  snap('后序遍历完成！ '+result.map(i=>nodeById(i).val).join('→'),null,false);
+  return steps;
+}
+
+function applyStep(type,step){
+  const svgId=`svg-${type}`;
+  TREE.nodes.forEach(n=>setNode(svgId,n.id,''));
+  step.visited.forEach(id=>setNode(svgId,id,'visited'));
+  step.stack.forEach(id=>setNode(svgId,id,'stacked'));
+  if(step.activeId) setNode(svgId,step.activeId,'active');
+  document.getElementById(`stack-${type}`).innerHTML=
+    step.stack.map(id=>`<div class="stack-item">${nodeById(id).val}</div>`).join('');
+  if(type==='post'){
+    document.getElementById('stack2-post').innerHTML=
+      (step.s2||[]).map(id=>`<div class="stack-item" style="background:#1a2a0a;border-color:#3d8a2d;color:#3fb950">${nodeById(id).val}</div>`).join('');
+  }
+  document.getElementById(`result-${type}`).innerHTML=
+    step.result.map(id=>`<div class="res-node">${nodeById(id).val}</div>`).join('');
+  const lv=document.getElementById(`log-${type}`);
+  const d=document.createElement('div');
+  d.className='log-line'+(step.hl?' highlight':'');
+  d.innerHTML=`步骤${STATE[type].ptr}：<span>${step.msg}</span>`;
+  lv.insertBefore(d,lv.firstChild);
+}
+
+function startDemo(type){
+  if(TIMER[type]) clearInterval(TIMER[type]);
+  renderSVG(`svg-${type}`);
+  ['stack-','result-','log-'].forEach(p=>document.getElementById(p+type).innerHTML='');
+  if(type==='post') document.getElementById('stack2-post').innerHTML='';
+  const builders={pre:buildPreSteps,in:buildInSteps,post:buildPostSteps};
+  STATE[type]={steps:builders[type](),ptr:0};
+  applyStep(type,STATE[type].steps[0]);
+}
+function stepDemo(type){
+  if(!STATE[type]) return;
+  const s=STATE[type];
+  if(s.ptr<s.steps.length-1){s.ptr++;applyStep(type,s.steps[s.ptr]);}
+}
+function autoDemo(type){
+  if(TIMER[type]) clearInterval(TIMER[type]);
+  if(!STATE[type]) startDemo(type);
+  TIMER[type]=setInterval(()=>{
+    const s=STATE[type];
+    if(s.ptr>=s.steps.length-1){clearInterval(TIMER[type]);return;}
+    s.ptr++;applyStep(type,s.steps[s.ptr]);
+  },SPEEDS[type]||800);
+}
+function updateSpeed(type,val){
+  SPEEDS[type]=parseInt(val);
+  document.getElementById(`speed-${type}-lbl`).textContent=val+'ms';
+}
+function switchTab(type,btn){
+  document.querySelectorAll('.demo-wrap').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));
+  document.getElementById(`tab-${type}`).classList.add('active');
+  btn.classList.add('active');
+  renderSVG(`svg-${type}`);
+}
+['pre','in','post'].forEach(t=>renderSVG(`svg-${t}`));
+</script>
 </body>
 </html>
