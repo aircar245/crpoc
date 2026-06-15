@@ -38,65 +38,73 @@
     .b-card code{background:#0d1117;border:1px solid #21262d;border-radius:4px;padding:1px 5px;font-size:.8rem;color:#f0883e}
 
     /* demo */
-    #demo{padding:90px 24px 80px;max-width:960px;margin:0 auto}
-    #demo h2.sec-title{font-size:1.7rem;font-weight:700;margin-bottom:8px;color:#fff}
+    #demo{padding:72px 24px 32px;max-width:1200px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+    #demo h2.sec-title{font-size:1.5rem;font-weight:700;margin-bottom:6px;color:#fff}
 
     /* chapter tabs */
-    .chapter-tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px}
-    .chapter-btn{padding:9px 22px;border-radius:10px;border:1px solid #21262d;background:#161b22;color:#8b949e;cursor:pointer;font-size:.9rem;font-weight:600;transition:all .2s;letter-spacing:.3px}
+    .chapter-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+    .chapter-btn{padding:7px 18px;border-radius:8px;border:1px solid #21262d;background:#161b22;color:#8b949e;cursor:pointer;font-size:.86rem;font-weight:600;transition:all .2s}
     .chapter-btn:hover{border-color:#58a6ff;color:#58a6ff}
     .chapter-btn.active{background:linear-gradient(135deg,#1a2a4a,#2d4a7a);border-color:#58a6ff;color:#58a6ff}
-    .chapter-wrap{display:none}
-    .chapter-wrap.active{display:block}
+    .chapter-wrap{display:none;flex:1}
+    .chapter-wrap.active{display:flex;flex-direction:column}
 
     /* chapter header */
-    .chapter-header{margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid #21262d}
-    .chapter-header h3{font-size:1.2rem;font-weight:700;color:#fff;margin-bottom:6px}
-    .chapter-header p{font-size:.85rem;color:#8b949e;line-height:1.6}
+    .chapter-header{margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #21262d;display:flex;align-items:baseline;gap:16px}
+    .chapter-header h3{font-size:1rem;font-weight:700;color:#fff;white-space:nowrap}
+    .chapter-header p{font-size:.8rem;color:#8b949e;line-height:1.5}
 
     /* traversal tabs */
-    .tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
-    .tab-btn{padding:7px 18px;border-radius:8px;border:1px solid #21262d;background:#0d1117;color:#8b949e;cursor:pointer;font-size:.84rem;transition:all .2s}
+    .tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+    .tab-btn{padding:5px 14px;border-radius:7px;border:1px solid #21262d;background:#0d1117;color:#8b949e;cursor:pointer;font-size:.82rem;transition:all .2s}
     .tab-btn:hover{border-color:#bc8cff;color:#bc8cff}
     .tab-btn.active{background:linear-gradient(135deg,#2a1a4a,#3e1e5f);border-color:#bc8cff;color:#bc8cff;font-weight:600}
-    .demo-wrap{display:none}
-    .demo-wrap.active{display:block}
+    .demo-wrap{display:none;flex:1}
+    .demo-wrap.active{display:flex;flex-direction:column;flex:1}
+
+    /* two-column main layout */
+    .demo-main{display:grid;grid-template-columns:1fr 340px;gap:12px;flex:1;min-height:0}
+    .demo-left{display:flex;flex-direction:column;gap:8px;min-height:0}
+    .demo-right{display:flex;flex-direction:column;gap:8px;min-height:0;overflow:hidden}
 
     /* tree & visualization */
-    .tree-area{background:#0d1117;border:1px solid #21262d;border-radius:12px;padding:16px;overflow:auto;margin-bottom:16px}
-    svg.tree{display:block;margin:0 auto}
+    .tree-area{background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:10px;flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+    svg.tree{display:block;width:100%;height:100%}
     .node-circle{fill:#1a2a4a;stroke:#2d4a7a;stroke-width:2;transition:fill .4s,stroke .4s}
     .node-circle.visited{fill:#1a4a2a;stroke:#2d8a4a}
     .node-circle.active{fill:#4a3a10;stroke:#f0883e}
     .node-circle.stacked{fill:#2a1a4a;stroke:#8a4abd}
     .node-text{fill:#e0e0e0;font-size:14px;font-weight:600;text-anchor:middle;dominant-baseline:central;pointer-events:none}
     .edge{stroke:#21262d;stroke-width:2}
-    .stack-area{background:#0d1117;border:1px solid #21262d;border-radius:12px;padding:16px;margin-bottom:12px}
-    .stack-area h4{font-size:.85rem;color:#8b949e;margin-bottom:10px}
-    .stack-vis{display:flex;flex-direction:column-reverse;gap:6px;min-height:40px}
-    .stack-item{background:#2a1a4a;border:1px solid #5a2d8a;border-radius:6px;padding:6px 14px;font-size:.88rem;color:#bc8cff;text-align:center;width:fit-content;min-width:56px}
-    .result-area{background:#0d1117;border:1px solid #21262d;border-radius:12px;padding:16px;margin-bottom:12px}
-    .result-area h4{font-size:.85rem;color:#8b949e;margin-bottom:10px}
-    .result-seq{display:flex;gap:8px;flex-wrap:wrap;min-height:36px}
-    .res-node{background:#1a4a2a;border:1px solid #2d8a4a;border-radius:6px;padding:5px 14px;font-size:.88rem;color:#3fb950;font-weight:600}
-    .log-area{background:#0d1117;border:1px solid #21262d;border-radius:12px;padding:16px;margin-bottom:12px;max-height:140px;overflow-y:auto}
-    .log-area h4{font-size:.85rem;color:#8b949e;margin-bottom:8px}
-    .log-line{font-size:.8rem;color:#8b949e;padding:3px 0;border-bottom:1px solid #161b22}
+
+    /* right panel pieces */
+    .stack-area{background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:10px}
+    .stack-area h4{font-size:.78rem;color:#8b949e;margin-bottom:6px}
+    .stack-vis{display:flex;flex-direction:row-reverse;gap:5px;flex-wrap:wrap;min-height:32px}
+    .stack-item{background:#2a1a4a;border:1px solid #5a2d8a;border-radius:5px;padding:4px 10px;font-size:.82rem;color:#bc8cff;text-align:center;min-width:36px}
+    .result-area{background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:10px}
+    .result-area h4{font-size:.78rem;color:#8b949e;margin-bottom:6px}
+    .result-seq{display:flex;gap:5px;flex-wrap:wrap;min-height:28px}
+    .res-node{background:#1a4a2a;border:1px solid #2d8a4a;border-radius:5px;padding:3px 10px;font-size:.82rem;color:#3fb950;font-weight:600}
+    .log-area{background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:10px;flex:1;overflow-y:auto;min-height:0}
+    .log-area h4{font-size:.78rem;color:#8b949e;margin-bottom:6px}
+    .log-line{font-size:.75rem;color:#8b949e;padding:2px 0;border-bottom:1px solid #161b22}
     .log-line span{color:#58a6ff}
     .log-line.highlight span{color:#f0883e}
-    .algo-code{background:#0d1117;border:1px solid #21262d;border-radius:12px;padding:16px;margin-bottom:14px;overflow-x:auto}
-    .algo-code pre{font-size:.8rem;color:#8b949e;line-height:1.7}
+    .algo-code{background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:10px 12px;overflow-x:auto}
+    .algo-code pre{font-size:.75rem;color:#8b949e;line-height:1.6}
     .kw{color:#ff7b72}.fn{color:#d2a8ff}.cm{color:#484f58;font-style:italic}
-    .controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
-    .btn{padding:8px 18px;border-radius:8px;border:none;cursor:pointer;font-size:.86rem;font-weight:600;transition:all .2s}
+    .controls{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding-top:4px}
+    .btn{padding:6px 14px;border-radius:7px;border:none;cursor:pointer;font-size:.82rem;font-weight:600;transition:all .2s}
     .btn-primary{background:linear-gradient(135deg,#1a4a6a,#2d7abf);color:#fff}
     .btn-primary:hover{filter:brightness(1.2)}
     .btn-secondary{background:#161b22;border:1px solid #21262d;color:#8b949e}
     .btn-secondary:hover{color:#fff;border-color:#58a6ff}
-    .speed-wrap{display:flex;align-items:center;gap:8px;font-size:.82rem;color:#8b949e}
-    .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.78rem;color:#8b949e;margin-bottom:12px}
-    .legend-item{display:flex;align-items:center;gap:6px}
-    .legend-dot{width:13px;height:13px;border-radius:50%;border:2px solid}
+    .speed-wrap{display:flex;align-items:center;gap:5px;font-size:.75rem;color:#8b949e}
+    .speed-wrap input{width:70px}
+    .legend{display:flex;gap:10px;flex-wrap:wrap;font-size:.74rem;color:#8b949e;margin:6px 0}
+    .legend-item{display:flex;align-items:center;gap:4px}
+    .legend-dot{width:11px;height:11px;border-radius:50%;border:2px solid;flex-shrink:0}
     .ld-default{background:#1a2a4a;border-color:#2d4a7a}
     .ld-active{background:#4a3a10;border-color:#f0883e}
     .ld-stacked{background:#2a1a4a;border-color:#8a4abd}
@@ -141,7 +149,6 @@
   <!-- 章节导航 -->
   <div class="chapter-tabs">
     <button class="chapter-btn active" onclick="switchChapter('tree',this)">第一章 · 树</button>
-    <!-- 后续章节在此追加 -->
   </div>
 
   <!-- ─── 第一章：树 ─── -->
@@ -151,105 +158,116 @@
       <p>以栈为工具对二叉树进行非递归遍历，观察每一步压栈、弹栈与访问的过程。</p>
     </div>
 
-    <!-- 遍历方式 tab -->
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('pre',this)">先序遍历（根→左→右）</button>
-      <button class="tab-btn" onclick="switchTab('in',this)">中序遍历（左→根→右）</button>
-      <button class="tab-btn" onclick="switchTab('post',this)">后序遍历（左→右→根）</button>
+      <button class="tab-btn active" onclick="switchTab('pre',this)">先序（根→左→右）</button>
+      <button class="tab-btn" onclick="switchTab('in',this)">中序（左→根→右）</button>
+      <button class="tab-btn" onclick="switchTab('post',this)">后序（左→右→根）</button>
     </div>
 
     <!-- 先序 -->
     <div id="tab-pre" class="demo-wrap active">
-      <div class="algo-code"><pre><span class="cm">// 非递归先序遍历（栈实现）</span>
-<span class="kw">void</span> <span class="fn">preOrder</span>(Node *root) {
-    Stack s; init(&amp;s);
-    <span class="kw">if</span> (root) push(&amp;s, root);
-    <span class="kw">while</span> (!isEmpty(&amp;s)) {
-        Node *p = pop(&amp;s);                <span class="cm">// 弹出</span>
-        visit(p);                         <span class="cm">// 访问根</span>
-        <span class="kw">if</span> (p-&gt;right) push(&amp;s, p-&gt;right); <span class="cm">// 右子先压</span>
-        <span class="kw">if</span> (p-&gt;left)  push(&amp;s, p-&gt;left);  <span class="cm">// 左子后压（先弹出）</span>
-    }
+      <div class="demo-main">
+        <div class="demo-left">
+          <div class="tree-area"><svg class="tree" id="svg-pre" viewBox="0 0 520 240"></svg></div>
+          <div class="controls">
+            <button class="btn btn-primary" onclick="startDemo('pre')">▶ 开始/重置</button>
+            <button class="btn btn-secondary" onclick="stepDemo('pre')">单步</button>
+            <button class="btn btn-secondary" onclick="autoDemo('pre')">自动</button>
+            <div class="speed-wrap">速度<input type="range" min="200" max="2000" value="800" step="100" id="speed-pre" oninput="updateSpeed('pre',this.value)"><span id="speed-pre-lbl">800ms</span></div>
+          </div>
+        </div>
+        <div class="demo-right">
+          <div class="algo-code"><pre><span class="cm">// 非递归先序（栈）</span>
+<span class="kw">if</span> (root) push(&amp;s, root);
+<span class="kw">while</span> (!isEmpty(&amp;s)) {
+    Node *p = pop(&amp;s);
+    visit(p);
+    <span class="kw">if</span> (p-&gt;right) push(&amp;s, p-&gt;right);
+    <span class="kw">if</span> (p-&gt;left)  push(&amp;s, p-&gt;left);
 }</pre></div>
-      <div class="legend">
-        <div class="legend-item"><div class="legend-dot ld-default"></div>未访问</div>
-        <div class="legend-item"><div class="legend-dot ld-stacked"></div>在栈中</div>
-        <div class="legend-item"><div class="legend-dot ld-active"></div>当前处理</div>
-        <div class="legend-item"><div class="legend-dot ld-visited"></div>已访问</div>
-      </div>
-      <div class="tree-area"><svg class="tree" id="svg-pre" width="520" height="260"></svg></div>
-      <div class="stack-area"><h4>栈内容（顶部 = 栈顶）</h4><div class="stack-vis" id="stack-pre"></div></div>
-      <div class="result-area"><h4>遍历结果</h4><div class="result-seq" id="result-pre"></div></div>
-      <div class="log-area"><h4>操作日志</h4><div id="log-pre"></div></div>
-      <div class="controls">
-        <button class="btn btn-primary" onclick="startDemo('pre')">▶ 开始/重置</button>
-        <button class="btn btn-secondary" onclick="stepDemo('pre')">单步</button>
-        <button class="btn btn-secondary" onclick="autoDemo('pre')">自动播放</button>
-        <div class="speed-wrap">速度<input type="range" min="200" max="2000" value="800" step="100" id="speed-pre" oninput="updateSpeed('pre',this.value)"><span id="speed-pre-lbl">800ms</span></div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot ld-default"></div>未访问</div>
+            <div class="legend-item"><div class="legend-dot ld-stacked"></div>在栈中</div>
+            <div class="legend-item"><div class="legend-dot ld-active"></div>处理中</div>
+            <div class="legend-item"><div class="legend-dot ld-visited"></div>已访问</div>
+          </div>
+          <div class="stack-area"><h4>栈（顶→底）</h4><div class="stack-vis" id="stack-pre"></div></div>
+          <div class="result-area"><h4>遍历结果</h4><div class="result-seq" id="result-pre"></div></div>
+          <div class="log-area"><h4>操作日志</h4><div id="log-pre"></div></div>
+        </div>
       </div>
     </div>
 
     <!-- 中序 -->
     <div id="tab-in" class="demo-wrap">
-      <div class="algo-code"><pre><span class="cm">// 非递归中序遍历（栈实现）</span>
-<span class="kw">void</span> <span class="fn">inOrder</span>(Node *root) {
-    Stack s; init(&amp;s);
-    Node *p = root;
-    <span class="kw">while</span> (p || !isEmpty(&amp;s)) {
-        <span class="kw">while</span> (p) { push(&amp;s, p); p = p-&gt;left; } <span class="cm">// 沿左路压栈</span>
-        p = pop(&amp;s);                              <span class="cm">// 弹出</span>
-        visit(p);                                 <span class="cm">// 访问</span>
-        p = p-&gt;right;                             <span class="cm">// 转右子树</span>
+      <div class="demo-main">
+        <div class="demo-left">
+          <div class="tree-area"><svg class="tree" id="svg-in" viewBox="0 0 520 240"></svg></div>
+          <div class="controls">
+            <button class="btn btn-primary" onclick="startDemo('in')">▶ 开始/重置</button>
+            <button class="btn btn-secondary" onclick="stepDemo('in')">单步</button>
+            <button class="btn btn-secondary" onclick="autoDemo('in')">自动</button>
+            <div class="speed-wrap">速度<input type="range" min="200" max="2000" value="800" step="100" id="speed-in" oninput="updateSpeed('in',this.value)"><span id="speed-in-lbl">800ms</span></div>
+          </div>
+        </div>
+        <div class="demo-right">
+          <div class="algo-code"><pre><span class="cm">// 非递归中序（栈）</span>
+Node *p = root;
+<span class="kw">while</span> (p || !isEmpty(&amp;s)) {
+    <span class="kw">while</span> (p) {
+        push(&amp;s, p);
+        p = p-&gt;left;
     }
+    p = pop(&amp;s);
+    visit(p);
+    p = p-&gt;right;
 }</pre></div>
-      <div class="legend">
-        <div class="legend-item"><div class="legend-dot ld-default"></div>未访问</div>
-        <div class="legend-item"><div class="legend-dot ld-stacked"></div>在栈中</div>
-        <div class="legend-item"><div class="legend-dot ld-active"></div>当前处理</div>
-        <div class="legend-item"><div class="legend-dot ld-visited"></div>已访问</div>
-      </div>
-      <div class="tree-area"><svg class="tree" id="svg-in" width="520" height="260"></svg></div>
-      <div class="stack-area"><h4>栈内容（顶部 = 栈顶）</h4><div class="stack-vis" id="stack-in"></div></div>
-      <div class="result-area"><h4>遍历结果</h4><div class="result-seq" id="result-in"></div></div>
-      <div class="log-area"><h4>操作日志</h4><div id="log-in"></div></div>
-      <div class="controls">
-        <button class="btn btn-primary" onclick="startDemo('in')">▶ 开始/重置</button>
-        <button class="btn btn-secondary" onclick="stepDemo('in')">单步</button>
-        <button class="btn btn-secondary" onclick="autoDemo('in')">自动播放</button>
-        <div class="speed-wrap">速度<input type="range" min="200" max="2000" value="800" step="100" id="speed-in" oninput="updateSpeed('in',this.value)"><span id="speed-in-lbl">800ms</span></div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot ld-default"></div>未访问</div>
+            <div class="legend-item"><div class="legend-dot ld-stacked"></div>在栈中</div>
+            <div class="legend-item"><div class="legend-dot ld-active"></div>处理中</div>
+            <div class="legend-item"><div class="legend-dot ld-visited"></div>已访问</div>
+          </div>
+          <div class="stack-area"><h4>栈（顶→底）</h4><div class="stack-vis" id="stack-in"></div></div>
+          <div class="result-area"><h4>遍历结果</h4><div class="result-seq" id="result-in"></div></div>
+          <div class="log-area"><h4>操作日志</h4><div id="log-in"></div></div>
+        </div>
       </div>
     </div>
 
     <!-- 后序 -->
     <div id="tab-post" class="demo-wrap">
-      <div class="algo-code"><pre><span class="cm">// 非递归后序遍历（双栈法）</span>
-<span class="kw">void</span> <span class="fn">postOrder</span>(Node *root) {
-    Stack s1, s2; init(&amp;s1); init(&amp;s2);
-    <span class="kw">if</span> (root) push(&amp;s1, root);
-    <span class="kw">while</span> (!isEmpty(&amp;s1)) {
-        Node *p = pop(&amp;s1);
-        push(&amp;s2, p);                     <span class="cm">// 压入辅助栈</span>
-        <span class="kw">if</span> (p-&gt;left)  push(&amp;s1, p-&gt;left);
-        <span class="kw">if</span> (p-&gt;right) push(&amp;s1, p-&gt;right);
-    }
-    <span class="kw">while</span> (!isEmpty(&amp;s2)) visit(pop(&amp;s2)); <span class="cm">// 逆序弹出即后序</span>
-}</pre></div>
-      <div class="legend">
-        <div class="legend-item"><div class="legend-dot ld-default"></div>未访问</div>
-        <div class="legend-item"><div class="legend-dot ld-stacked"></div>S1工作栈</div>
-        <div class="legend-item"><div class="legend-dot ld-active"></div>当前处理</div>
-        <div class="legend-item"><div class="legend-dot ld-visited"></div>已访问</div>
-      </div>
-      <div class="tree-area"><svg class="tree" id="svg-post" width="520" height="260"></svg></div>
-      <div class="stack-area"><h4>S1 工作栈</h4><div class="stack-vis" id="stack-post"></div></div>
-      <div class="stack-area"><h4>S2 辅助栈</h4><div class="stack-vis" id="stack2-post"></div></div>
-      <div class="result-area"><h4>遍历结果</h4><div class="result-seq" id="result-post"></div></div>
-      <div class="log-area"><h4>操作日志</h4><div id="log-post"></div></div>
-      <div class="controls">
-        <button class="btn btn-primary" onclick="startDemo('post')">▶ 开始/重置</button>
-        <button class="btn btn-secondary" onclick="stepDemo('post')">单步</button>
-        <button class="btn btn-secondary" onclick="autoDemo('post')">自动播放</button>
-        <div class="speed-wrap">速度<input type="range" min="200" max="2000" value="800" step="100" id="speed-post" oninput="updateSpeed('post',this.value)"><span id="speed-post-lbl">800ms</span></div>
+      <div class="demo-main">
+        <div class="demo-left">
+          <div class="tree-area"><svg class="tree" id="svg-post" viewBox="0 0 520 240"></svg></div>
+          <div class="controls">
+            <button class="btn btn-primary" onclick="startDemo('post')">▶ 开始/重置</button>
+            <button class="btn btn-secondary" onclick="stepDemo('post')">单步</button>
+            <button class="btn btn-secondary" onclick="autoDemo('post')">自动</button>
+            <div class="speed-wrap">速度<input type="range" min="200" max="2000" value="800" step="100" id="speed-post" oninput="updateSpeed('post',this.value)"><span id="speed-post-lbl">800ms</span></div>
+          </div>
+        </div>
+        <div class="demo-right">
+          <div class="algo-code"><pre><span class="cm">// 非递归后序（双栈）</span>
+push(&amp;s1, root);
+<span class="kw">while</span> (!isEmpty(&amp;s1)) {
+    Node *p = pop(&amp;s1);
+    push(&amp;s2, p);
+    <span class="kw">if</span> (p-&gt;left)  push(&amp;s1, p-&gt;left);
+    <span class="kw">if</span> (p-&gt;right) push(&amp;s1, p-&gt;right);
+}
+<span class="kw">while</span> (!isEmpty(&amp;s2)) visit(pop(&amp;s2));</pre></div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot ld-default"></div>未访问</div>
+            <div class="legend-item"><div class="legend-dot ld-stacked"></div>S1工作栈</div>
+            <div class="legend-item"><div class="legend-dot ld-active"></div>处理中</div>
+            <div class="legend-item"><div class="legend-dot ld-visited"></div>已访问</div>
+          </div>
+          <div class="stack-area"><h4>S1 工作栈</h4><div class="stack-vis" id="stack-post"></div></div>
+          <div class="stack-area"><h4>S2 辅助栈</h4><div class="stack-vis" id="stack2-post"></div></div>
+          <div class="result-area"><h4>遍历结果</h4><div class="result-seq" id="result-post"></div></div>
+          <div class="log-area"><h4>操作日志</h4><div id="log-post"></div></div>
+        </div>
       </div>
     </div>
   </div><!-- /chapter-tree -->
