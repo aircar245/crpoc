@@ -116,6 +116,27 @@
     .ld-active{background:#4a3a10;border-color:#f0883e}
     .ld-stacked{background:#2a1a4a;border-color:#8a4abd}
     .ld-visited{background:#1a4a2a;border-color:#2d8a4a}
+    .ld-queued{background:#1a3a4a;border-color:#2d8aaa}
+    .ld-hnew{background:#103a20;border-color:#00cc44}
+    .ld-hcmp{background:#2a2a10;border-color:#c8a000}
+    .ld-hswap{background:#3a1010;border-color:#e05050}
+    /* heap node states */
+    .node-circle.h-cmp{fill:#2a2a10;stroke:#c8a000}
+    .node-circle.h-swap{fill:#3a1010;stroke:#e05050}
+    .node-circle.h-new{fill:#103a20;stroke:#00cc44}
+    /* heap array */
+    .harr{display:flex;gap:4px;flex-wrap:wrap;padding:4px 2px}
+    .arr-cell{display:flex;flex-direction:column;align-items:center;gap:2px}
+    .arr-box{width:34px;height:30px;border-radius:5px;border:1.5px solid #21262d;background:#0d1117;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:600;color:#e0e0e0;transition:background .25s}
+    .arr-idx{font-size:.65rem;color:#484f58}
+    .arr-box.an{background:#103a20;border-color:#00cc44;color:#6ef06e}
+    .arr-box.ac{background:#3a2810;border-color:#f0883e;color:#f0883e}
+    .arr-box.ay{background:#2a2a10;border-color:#c8a000;color:#c8c840}
+    .arr-box.as{background:#3a1010;border-color:#e05050;color:#ff8080}
+    .arr-box.ad{background:#1a4a2a;border-color:#2d8a4a;color:#3fb950}
+    .insert-row{display:flex;align-items:center;gap:8px;font-size:.8rem;color:#8b949e}
+    .insert-row input{width:52px;padding:3px 6px;border:1px solid #21262d;border-radius:5px;font-size:.8rem;background:#161b22;color:#e0e0e0;text-align:center}
+    .topk-label{font-size:.74rem;color:#8b949e;margin-bottom:3px}
 
     footer{text-align:center;padding:32px;color:#484f58;font-size:.8rem;border-top:1px solid #21262d}
   </style>
@@ -156,6 +177,7 @@
   <!-- 章节导航 -->
   <div class="chapter-tabs">
     <button class="chapter-btn active" onclick="switchChapter('tree',this)">第一章 · 树</button>
+    <button class="chapter-btn" onclick="switchChapter('heap',this)">第二章 · 堆</button>
   </div>
 
   <!-- ─── 第一章：树 ─── -->
@@ -316,6 +338,163 @@ enqueue(&amp;q, root);
     </div>
 
   </div><!-- /chapter-tree -->
+
+  <!-- ─── 第二章：堆 ─── -->
+  <div id="chapter-heap" class="chapter-wrap">
+    <div class="chapter-header">
+      <h3>第二章 · 堆</h3>
+      <p>大根堆的入堆、出堆、建堆，以及用小根堆求 Top-K 的完整过程。</p>
+    </div>
+    <div class="tabs" id="heap-tabs">
+      <button class="tab-btn active" onclick="switchHeapTab('insert',this)">入堆（上滤）</button>
+      <button class="tab-btn" onclick="switchHeapTab('delete',this)">出堆（下滤）</button>
+      <button class="tab-btn" onclick="switchHeapTab('build',this)">建堆（自下而上）</button>
+      <button class="tab-btn" onclick="switchHeapTab('topk',this)">Top-K（小根堆）</button>
+    </div>
+
+    <!-- 入堆 -->
+    <div id="tab-h-insert" class="demo-wrap active">
+      <div class="demo-main">
+        <div class="demo-left">
+          <div class="tree-area"><svg class="tree" id="svg-h-insert" viewBox="0 0 520 280"></svg></div>
+          <div class="harr" id="harr-h-insert"></div>
+          <div class="insert-row">
+            <label>插入值：</label>
+            <input type="number" id="insert-val" value="60" min="1" max="99">
+          </div>
+          <div class="controls">
+            <button class="btn btn-primary" onclick="startHeapDemo('insert')">▶ 开始/重置</button>
+            <button class="btn btn-secondary" onclick="stepHeapDemo('insert')">单步</button>
+            <button class="btn btn-secondary" onclick="autoHeapDemo('insert')">自动</button>
+            <div class="speed-wrap">速度<input type="range" min="200" max="2000" value="800" step="100" id="speed-h-insert" oninput="updateSpeed('h-insert',this.value)"><span id="speed-h-insert-lbl">800ms</span></div>
+          </div>
+        </div>
+        <div class="demo-right">
+          <div class="algo-code"><pre><span class="cm">// 入堆：追加末尾后上滤</span>
+h[++n] = val;
+i = n;
+<span class="kw">while</span> (i>1 && h[i]>h[i/2]) {
+    swap(h[i], h[i/2]);
+    i /= 2;
+}</pre></div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot ld-default"></div>默认</div>
+            <div class="legend-item"><div class="legend-dot ld-hnew"></div>新插入</div>
+            <div class="legend-item"><div class="legend-dot ld-hswap"></div>交换</div>
+            <div class="legend-item"><div class="legend-dot ld-hcmp"></div>停止比较</div>
+            <div class="legend-item"><div class="legend-dot ld-visited"></div>完成</div>
+          </div>
+          <div class="log-area"><h4>操作日志</h4><div id="log-h-insert"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 出堆 -->
+    <div id="tab-h-delete" class="demo-wrap">
+      <div class="demo-main">
+        <div class="demo-left">
+          <div class="tree-area"><svg class="tree" id="svg-h-delete" viewBox="0 0 520 280"></svg></div>
+          <div class="harr" id="harr-h-delete"></div>
+          <div class="controls">
+            <button class="btn btn-primary" onclick="startHeapDemo('delete')">▶ 开始/重置</button>
+            <button class="btn btn-secondary" onclick="stepHeapDemo('delete')">单步</button>
+            <button class="btn btn-secondary" onclick="autoHeapDemo('delete')">自动</button>
+            <div class="speed-wrap">速度<input type="range" min="200" max="2000" value="800" step="100" id="speed-h-delete" oninput="updateSpeed('h-delete',this.value)"><span id="speed-h-delete-lbl">800ms</span></div>
+          </div>
+        </div>
+        <div class="demo-right">
+          <div class="algo-code"><pre><span class="cm">// 出堆：堆顶换末尾后下滤</span>
+swap(h[1], h[n--]);
+i = 1;
+<span class="kw">while</span> (2*i <= n) {
+    j = larger_child(i);
+    <span class="kw">if</span> (h[i] < h[j]) swap(h[i],h[j]);
+    <span class="kw">else</span> <span class="kw">break</span>;
+    i = j;
+}</pre></div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot ld-active"></div>处理中</div>
+            <div class="legend-item"><div class="legend-dot ld-hcmp"></div>比较中</div>
+            <div class="legend-item"><div class="legend-dot ld-hswap"></div>交换</div>
+            <div class="legend-item"><div class="legend-dot ld-visited"></div>完成</div>
+          </div>
+          <div class="log-area"><h4>操作日志</h4><div id="log-h-delete"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 建堆 -->
+    <div id="tab-h-build" class="demo-wrap">
+      <div class="demo-main">
+        <div class="demo-left">
+          <div class="tree-area"><svg class="tree" id="svg-h-build" viewBox="0 0 520 280"></svg></div>
+          <div class="harr" id="harr-h-build"></div>
+          <div class="controls">
+            <button class="btn btn-primary" onclick="startHeapDemo('build')">▶ 开始/重置</button>
+            <button class="btn btn-secondary" onclick="stepHeapDemo('build')">单步</button>
+            <button class="btn btn-secondary" onclick="autoHeapDemo('build')">自动</button>
+            <div class="speed-wrap">速度<input type="range" min="200" max="2000" value="800" step="100" id="speed-h-build" oninput="updateSpeed('h-build',this.value)"><span id="speed-h-build-lbl">800ms</span></div>
+          </div>
+        </div>
+        <div class="demo-right">
+          <div class="algo-code"><pre><span class="cm">// 自下而上建大根堆</span>
+<span class="kw">for</span> (i = n/2; i >= 1; i--)
+    sift_down(h, i, n);
+
+<span class="cm">// sift_down:</span>
+<span class="kw">while</span> (2*i <= n) {
+    j = larger_child(i);
+    <span class="kw">if</span> (h[i]<h[j]) swap(h[i],h[j]);
+    <span class="kw">else</span> <span class="kw">break</span>;
+    i = j;
+}</pre></div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot ld-active"></div>当前下滤</div>
+            <div class="legend-item"><div class="legend-dot ld-hcmp"></div>已到位</div>
+            <div class="legend-item"><div class="legend-dot ld-hswap"></div>交换</div>
+            <div class="legend-item"><div class="legend-dot ld-visited"></div>子树完成</div>
+          </div>
+          <div class="log-area"><h4>操作日志</h4><div id="log-h-build"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top-K -->
+    <div id="tab-h-topk" class="demo-wrap">
+      <div class="demo-main">
+        <div class="demo-left">
+          <div class="topk-label">输入数组（已处理=绿，当前=橙）</div>
+          <div class="harr" id="inp-topk"></div>
+          <div class="tree-area" style="flex:1"><svg class="tree" id="svg-h-topk" viewBox="0 0 520 200"></svg></div>
+          <div class="harr" id="harr-h-topk"></div>
+          <div class="controls">
+            <button class="btn btn-primary" onclick="startHeapDemo('topk')">▶ 开始/重置</button>
+            <button class="btn btn-secondary" onclick="stepHeapDemo('topk')">单步</button>
+            <button class="btn btn-secondary" onclick="autoHeapDemo('topk')">自动</button>
+            <div class="speed-wrap">速度<input type="range" min="200" max="2000" value="800" step="100" id="speed-h-topk" oninput="updateSpeed('h-topk',this.value)"><span id="speed-h-topk-lbl">800ms</span></div>
+          </div>
+        </div>
+        <div class="demo-right">
+          <div class="algo-code"><pre><span class="cm">// Top-K 用小根堆（k=3）</span>
+<span class="cm">// 1. 前k个入小根堆</span>
+<span class="cm">// 2. 剩余元素 > 堆顶 则替换+下滤</span>
+<span class="kw">for</span> (i=k; i&lt;n; i++)
+    <span class="kw">if</span> (a[i] > h[1]) {
+        h[1] = a[i];
+        sift_down(h, 1, k);
+    }
+<span class="cm">// 堆中即为最大的k个元素</span></pre></div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot ld-default"></div>堆中元素</div>
+            <div class="legend-item"><div class="legend-dot ld-hcmp"></div>堆顶（最小）</div>
+            <div class="legend-item"><div class="legend-dot ld-hswap"></div>被替换</div>
+            <div class="legend-item"><div class="legend-dot ld-visited"></div>Top-K确定</div>
+          </div>
+          <div class="log-area"><h4>操作日志</h4><div id="log-h-topk"></div></div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /chapter-heap -->
 
 </div><!-- /demo -->
 
@@ -513,7 +692,222 @@ function switchChapter(id,btn){
   document.querySelectorAll('.chapter-btn').forEach(el=>el.classList.remove('active'));
   document.getElementById('chapter-'+id).classList.add('active');
   btn.classList.add('active');
+  if(id==='heap') initHeapChapter();
 }
+
+/* ════════════════════════════════════════
+   堆章节
+   ════════════════════════════════════════ */
+const HPOS=[null,
+  {x:260,y:28},
+  {x:145,y:102},{x:375,y:102},
+  {x:78,y:182},{x:212,y:182},{x:308,y:182},{x:442,y:182},
+  {x:44,y:258},{x:112,y:258},
+];
+const HCLS={'h-normal':'','h-active':'active','h-cmp':'h-cmp','h-swap':'h-swap','h-done':'visited','h-new':'h-new'};
+const HSTATE={},HTIMER={};
+const TOPK_INPUT=[3,1,9,7,2,8,4,6,5],TOPK_K=3;
+
+function renderHeapSVG(svgId,arr,ns){
+  const svg=document.getElementById(svgId);if(!svg)return;svg.innerHTML='';
+  const n=arr.length-1;
+  for(let i=2;i<=n;i++){
+    const p=Math.floor(i/2);if(!HPOS[p]||!HPOS[i])continue;
+    const dx=HPOS[i].x-HPOS[p].x,dy=HPOS[i].y-HPOS[p].y,d=Math.sqrt(dx*dx+dy*dy),R=19;
+    const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',HPOS[p].x+dx/d*R);line.setAttribute('y1',HPOS[p].y+dy/d*R);
+    line.setAttribute('x2',HPOS[i].x-dx/d*R);line.setAttribute('y2',HPOS[i].y-dy/d*R);
+    line.setAttribute('class','edge');svg.appendChild(line);
+  }
+  for(let i=1;i<=n;i++){
+    const pos=HPOS[i];if(!pos)continue;
+    const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',pos.x);c.setAttribute('cy',pos.y);c.setAttribute('r',19);
+    c.setAttribute('class','node-circle '+(HCLS[ns[i]||'h-normal']||''));
+    const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',pos.x);t.setAttribute('y',pos.y);
+    t.setAttribute('class','node-text');t.textContent=arr[i];
+    g.appendChild(c);g.appendChild(t);svg.appendChild(g);
+  }
+}
+function renderHeapArr(id,arr,ns){
+  const el=document.getElementById(id);if(!el)return;
+  const cm={'h-normal':'','h-active':'ac','h-cmp':'ay','h-swap':'as','h-done':'ad','h-new':'an'};
+  el.innerHTML=arr.slice(1).map((v,i)=>{
+    const idx=i+1,cls=cm[ns[idx]||'h-normal']||'';
+    return `<div class="arr-cell"><div class="arr-box ${cls}">${v}</div><div class="arr-idx">${idx}</div></div>`;
+  }).join('');
+}
+function renderTopkInput(ihi){
+  const el=document.getElementById('inp-topk');if(!el)return;
+  el.innerHTML=TOPK_INPUT.map((v,i)=>{
+    const cls=i<ihi?'ad':i===ihi?'ac':'';
+    return `<div class="arr-cell"><div class="arr-box ${cls}">${v}</div><div class="arr-idx">${i}</div></div>`;
+  }).join('');
+}
+
+function applyHeapStep(type,step){
+  renderHeapSVG('svg-h-'+type,step.arr,step.ns||{});
+  renderHeapArr('harr-h-'+type,step.arr,step.ns||{});
+  if(type==='topk') renderTopkInput(step.ihi??-1);
+  const lv=document.getElementById('log-h-'+type);
+  if(lv) lv.innerHTML=`<div class="log-line${step.hl?' highlight':''}">步骤${HSTATE[type].ptr}：<span>${step.msg}</span></div>`;
+}
+
+/* ── 入堆步骤 ── */
+function buildHInsertSteps(val){
+  const h=[null,50,45,30,20,35,25,10];const steps=[];
+  const aN=(arr,ov={})=>{const ns={};for(let i=1;i<arr.length;i++)ns[i]=ov[i]||'h-normal';return ns;};
+  const snap=(arr,ns,msg,hl)=>steps.push({arr:[...arr],ns:{...ns},msg,hl});
+  snap(h,aN(h),`初始大根堆 [${h.slice(1)}]，准备插入 ${val}`,false);
+  h.push(val);const n=h.length-1;
+  snap(h,aN(h,{[n]:'h-new'}),`${val} 追加至末尾，下标 ${n}，与父节点 h[${Math.floor(n/2)}]=${h[Math.floor(n/2)]} 比较`,false);
+  let i=n;
+  while(i>1){
+    const p=Math.floor(i/2);
+    if(h[i]>h[p]){
+      snap(h,aN(h,{[i]:'h-swap',[p]:'h-swap'}),`h[${i}]=${h[i]} > h[${p}]=${h[p]}，交换上移`,true);
+      [h[i],h[p]]=[h[p],h[i]];i=p;
+      snap(h,aN(h,{[i]:'h-new'}),`上移至 h[${i}]=${h[i]}${i>1?`，继续与父 h[${Math.floor(i/2)}]=${h[Math.floor(i/2)]} 比较`:'，已到根'}`,false);
+    } else {
+      snap(h,aN(h,{[i]:'h-cmp',[p]:'h-cmp'}),`h[${i}]=${h[i]} ≤ h[${p}]=${h[p]}，停止上滤`,false);break;
+    }
+  }
+  const ns={};for(let k=1;k<h.length;k++)ns[k]='h-done';
+  snap(h,ns,`插入完成！大根堆：[${h.slice(1)}]`,false);
+  return steps;
+}
+
+/* ── 出堆步骤 ── */
+function buildHDeleteSteps(){
+  const h=[null,50,45,30,20,35,25,10];const steps=[];
+  const aN=(ov={})=>{const ns={};for(let i=1;i<h.length;i++)ns[i]=ov[i]||'h-normal';return ns;};
+  const snap=(ns,msg,hl)=>steps.push({arr:[...h],ns:{...ns},msg,hl});
+  snap(aN(),`初始大根堆，删除最大值堆顶 ${h[1]}`,false);
+  snap(aN({1:'h-active'}),`堆顶 ${h[1]} 即将被删除，先与末尾互换`,true);
+  const rootVal=h[1],last=h.length-1;
+  [h[1],h[last]]=[h[last],h[1]];
+  snap(aN({1:'h-swap',[last]:'h-swap'}),`h[1] 与 h[${last}]=${h[last]} 交换`,true);
+  h.pop();const n=h.length-1;
+  snap(aN({1:'h-active'}),`末尾（原堆顶 ${rootVal}）删除，新堆顶 ${h[1]} 开始下滤，n=${n}`,false);
+  let i=1;
+  while(true){
+    const l=2*i,r=2*i+1;let lg=i;
+    if(l<=n&&h[l]>h[lg])lg=l;
+    if(r<=n&&h[r]>h[lg])lg=r;
+    if(lg===i){snap(aN({[i]:'h-cmp'}),`h[${i}]=${h[i]} 已是子树最大值，下滤完成`,false);break;}
+    const ov={[i]:'h-swap',[lg]:'h-swap'};
+    if(l<=n&&l!==lg)ov[l]='h-cmp';if(r<=n&&r!==lg)ov[r]='h-cmp';
+    snap(ov,`h[${i}]=${h[i]} < h[${lg}]=${h[lg]}，与较大子节点交换`,true);
+    [h[i],h[lg]]=[h[lg],h[i]];i=lg;
+    snap(aN({[i]:'h-active'}),`下移至 h[${i}]=${h[i]}，继续检查`,false);
+  }
+  const ns={};for(let k=1;k<=n;k++)ns[k]='h-done';
+  steps.push({arr:[...h],ns,msg:`出堆完成！删除了 ${rootVal}，剩余堆：[${h.slice(1)}]`,hl:false});
+  return steps;
+}
+
+/* ── 建堆步骤 ── */
+function buildHBuildSteps(){
+  const h=[null,10,30,5,40,20,15,50,8,35];const n=h.length-1;const steps=[];const done=new Set();
+  const mkNs=(ov={})=>{const ns={};for(let i=1;i<=n;i++)ns[i]=done.has(i)?'h-done':(ov[i]||'h-normal');return ns;};
+  const snap=(ns,msg,hl)=>steps.push({arr:[...h],ns:{...ns},msg,hl});
+  snap(mkNs(),`无序数组 [${h.slice(1)}]，n=${n}，从 h[${Math.floor(n/2)}] 开始向上逐个下滤`,false);
+  for(let start=Math.floor(n/2);start>=1;start--){
+    snap(mkNs({[start]:'h-active'}),`对 h[${start}]=${h[start]} 做下滤`,false);
+    let i=start;
+    while(true){
+      const l=2*i,r=2*i+1;let lg=i;
+      if(l<=n&&h[l]>h[lg])lg=l;if(r<=n&&h[r]>h[lg])lg=r;
+      if(lg===i){snap(mkNs({[i]:'h-cmp'}),`h[${i}]=${h[i]} 已是最大值，停止`,false);break;}
+      snap(mkNs({[i]:'h-swap',[lg]:'h-swap'}),`h[${i}]=${h[i]} < h[${lg}]=${h[lg]}，交换`,true);
+      [h[i],h[lg]]=[h[lg],h[i]];i=lg;
+      snap(mkNs({[i]:'h-active'}),`下移至 h[${i}]=${h[i]}，继续检查`,false);
+    }
+    done.add(start);
+    if(start>1)snap(mkNs(),`h[${start}] 子树完成，处理 h[${start-1}]=${h[start-1]}`,false);
+    else snap(mkNs(),`建堆完成！大根堆：[${h.slice(1)}]`,false);
+  }
+  return steps;
+}
+
+/* ── Top-K步骤 ── */
+function buildHTopkSteps(){
+  const h=[null];const steps=[];
+  const aN=()=>{const ns={};for(let i=1;i<h.length;i++)ns[i]='h-normal';return ns;};
+  const snap=(ns,ihi,msg,hl)=>steps.push({arr:[...h],ns:{...ns},ihi,msg,hl});
+  function pushMin(v){
+    h.push(v);let i=h.length-1;
+    while(i>1&&h[i]<h[Math.floor(i/2)]){[h[i],h[Math.floor(i/2)]]=[h[Math.floor(i/2)],h[i]];i=Math.floor(i/2);}
+  }
+  function siftDownMin(i){
+    const n=h.length-1;
+    while(true){const l=2*i,r=2*i+1;let sm=i;
+      if(l<=n&&h[l]<h[sm])sm=l;if(r<=n&&h[r]<h[sm])sm=r;
+      if(sm===i)break;[h[i],h[sm]]=[h[sm],h[i]];i=sm;}
+  }
+  snap({},-1,`在 [${TOPK_INPUT}] 中求 Top-${TOPK_K}，建容量为 ${TOPK_K} 的小根堆`,false);
+  for(let i=0;i<TOPK_K;i++){
+    pushMin(TOPK_INPUT[i]);
+    snap(aN(),i,`enqueue(${TOPK_INPUT[i]}) 入小根堆`,false);
+  }
+  snap({...aN(),1:'h-cmp'},TOPK_K-1,`前 ${TOPK_K} 个元素入堆完毕，堆顶（最小值）= ${h[1]}`,false);
+  for(let i=TOPK_K;i<TOPK_INPUT.length;i++){
+    const v=TOPK_INPUT[i];
+    if(v>h[1]){
+      snap({...aN(),1:'h-swap'},i,`a[${i}]=${v} > 堆顶 ${h[1]}，替换堆顶并下滤`,true);
+      h[1]=v;siftDownMin(1);
+      snap({...aN(),1:'h-cmp'},i,`下滤后新堆顶 ${h[1]}`,false);
+    } else {
+      snap({...aN(),1:'h-cmp'},i,`a[${i}]=${v} ≤ 堆顶 ${h[1]}，丢弃`,false);
+    }
+  }
+  const ns={};for(let i=1;i<h.length;i++)ns[i]='h-done';
+  snap(ns,TOPK_INPUT.length,`Top-${TOPK_K} 完成！最大的 ${TOPK_K} 个元素：${h.slice(1).sort((a,b)=>b-a).join(', ')}`,false);
+  return steps;
+}
+
+/* ── 堆控制 ── */
+function startHeapDemo(type){
+  if(HTIMER[type])clearInterval(HTIMER[type]);
+  renderHeapSVG('svg-h-'+type,[null],{});
+  document.getElementById('harr-h-'+type).innerHTML='';
+  document.getElementById('log-h-'+type).innerHTML='';
+  if(type==='topk') renderTopkInput(-1);
+  const val=type==='insert'?parseInt(document.getElementById('insert-val').value||60):0;
+  const builders={insert:()=>buildHInsertSteps(val),delete:buildHDeleteSteps,build:buildHBuildSteps,topk:buildHTopkSteps};
+  HSTATE[type]={steps:builders[type](),ptr:0};
+  applyHeapStep(type,HSTATE[type].steps[0]);
+}
+function stepHeapDemo(type){
+  if(!HSTATE[type])return;
+  const s=HSTATE[type];
+  if(s.ptr<s.steps.length-1){s.ptr++;applyHeapStep(type,s.steps[s.ptr]);}
+}
+function autoHeapDemo(type){
+  if(HTIMER[type])clearInterval(HTIMER[type]);
+  if(!HSTATE[type])startHeapDemo(type);
+  HTIMER[type]=setInterval(()=>{
+    const s=HSTATE[type];
+    if(s.ptr>=s.steps.length-1){clearInterval(HTIMER[type]);return;}
+    s.ptr++;applyHeapStep(type,s.steps[s.ptr]);
+  },SPEEDS[type]||800);
+}
+function switchHeapTab(type,btn){
+  document.querySelectorAll('#chapter-heap .demo-wrap').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('#chapter-heap .tab-btn').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-h-'+type).classList.add('active');
+  btn.classList.add('active');
+  initHeapSVG(type);
+}
+function initHeapSVG(type){
+  const inits={insert:[null,50,45,30,20,35,25,10],delete:[null,50,45,30,20,35,25,10],build:[null,10,30,5,40,20,15,50,8,35],topk:[null]};
+  const arr=inits[type];const ns={};for(let i=1;i<arr.length;i++)ns[i]='h-normal';
+  renderHeapSVG('svg-h-'+type,arr,ns);renderHeapArr('harr-h-'+type,arr,ns);
+  if(type==='topk')renderTopkInput(-1);
+}
+function initHeapChapter(){['insert','delete','build','topk'].forEach(initHeapSVG);}
 
 /* ── 遍历 tab 切换 ── */
 function switchTab(type,btn){
