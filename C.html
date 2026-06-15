@@ -86,7 +86,7 @@
     .result-area h4{font-size:.78rem;color:#8b949e;margin-bottom:6px}
     .result-seq{display:flex;gap:5px;flex-wrap:wrap;min-height:28px}
     .res-node{background:#1a4a2a;border:1px solid #2d8a4a;border-radius:5px;padding:3px 10px;font-size:.82rem;color:#3fb950;font-weight:600}
-    .log-area{background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:10px;flex:1;overflow-y:auto;min-height:0}
+    .log-area{background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:10px}
     .log-area h4{font-size:.78rem;color:#8b949e;margin-bottom:6px}
     .log-line{font-size:.75rem;color:#8b949e;padding:2px 0;border-bottom:1px solid #161b22}
     .log-line span{color:#58a6ff}
@@ -394,10 +394,7 @@ function applyStep(type,step){
   document.getElementById(`result-${type}`).innerHTML=
     step.result.map(id=>`<div class="res-node">${nodeById(id).val}</div>`).join('');
   const lv=document.getElementById(`log-${type}`);
-  const d=document.createElement('div');
-  d.className='log-line'+(step.hl?' highlight':'');
-  d.innerHTML=`步骤${STATE[type].ptr}：<span>${step.msg}</span>`;
-  lv.insertBefore(d,lv.firstChild);
+  lv.innerHTML=`<div class="log-line${step.hl?' highlight':''}">步骤${STATE[type].ptr}：<span>${step.msg}</span></div>`;
 }
 
 /* ── 控制函数 ── */
