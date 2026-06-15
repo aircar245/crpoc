@@ -74,6 +74,7 @@
     .node-circle.visited{fill:#1a4a2a;stroke:#2d8a4a}
     .node-circle.active{fill:#4a3a10;stroke:#f0883e}
     .node-circle.stacked{fill:#2a1a4a;stroke:#8a4abd}
+    .node-circle.queued{fill:#1a3a4a;stroke:#2d8aaa}
     .node-text{fill:#e0e0e0;font-size:14px;font-weight:600;text-anchor:middle;dominant-baseline:central;pointer-events:none}
     .edge{stroke:#21262d;stroke-width:2}
 
@@ -82,6 +83,12 @@
     .stack-area h4{font-size:.78rem;color:#8b949e;margin-bottom:6px}
     .stack-vis{display:flex;flex-direction:row-reverse;gap:5px;flex-wrap:wrap;min-height:32px}
     .stack-item{background:#2a1a4a;border:1px solid #5a2d8a;border-radius:5px;padding:4px 10px;font-size:.82rem;color:#bc8cff;text-align:center;min-width:36px}
+    .queue-area{background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:10px}
+    .queue-area h4{font-size:.78rem;color:#8b949e;margin-bottom:6px}
+    .queue-vis{display:flex;flex-direction:row;gap:5px;flex-wrap:wrap;min-height:32px;align-items:center}
+    .queue-item{background:#1a3a4a;border:1px solid #2d8aaa;border-radius:5px;padding:4px 10px;font-size:.82rem;color:#66ccee;text-align:center;min-width:36px}
+    .queue-label{font-size:.68rem;color:#8b949e;padding:0 2px}
+    .ld-queued{background:#1a3a4a;border-color:#2d8aaa}
     .result-area{background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:10px}
     .result-area h4{font-size:.78rem;color:#8b949e;margin-bottom:6px}
     .result-seq{display:flex;gap:5px;flex-wrap:wrap;min-height:28px}
@@ -162,6 +169,7 @@
       <button class="tab-btn active" onclick="switchTab('pre',this)">先序（根→左→右）</button>
       <button class="tab-btn" onclick="switchTab('in',this)">中序（左→根→右）</button>
       <button class="tab-btn" onclick="switchTab('post',this)">后序（左→右→根）</button>
+      <button class="tab-btn" onclick="switchTab('level',this)">层序（队列 BFS）</button>
     </div>
 
     <!-- 先序 -->
@@ -270,6 +278,43 @@ push(&amp;s1, root);
         </div>
       </div>
     </div>
+    <!-- 层序 -->
+    <div id="tab-level" class="demo-wrap">
+      <div class="demo-main">
+        <div class="demo-left">
+          <div class="tree-area"><svg class="tree" id="svg-level" viewBox="0 0 520 240"></svg></div>
+          <div class="controls">
+            <button class="btn btn-primary" onclick="startDemo('level')">▶ 开始/重置</button>
+            <button class="btn btn-secondary" onclick="stepDemo('level')">单步</button>
+            <button class="btn btn-secondary" onclick="autoDemo('level')">自动</button>
+            <div class="speed-wrap">速度<input type="range" min="200" max="2000" value="800" step="100" id="speed-level" oninput="updateSpeed('level',this.value)"><span id="speed-level-lbl">800ms</span></div>
+          </div>
+        </div>
+        <div class="demo-right">
+          <div class="algo-code"><pre><span class="cm">// 层序遍历（队列 BFS）</span>
+enqueue(&amp;q, root);
+<span class="kw">while</span> (!isEmpty(&amp;q)) {
+    Node *p = dequeue(&amp;q);
+    visit(p);
+    <span class="kw">if</span> (p-&gt;left)  enqueue(&amp;q, p-&gt;left);
+    <span class="kw">if</span> (p-&gt;right) enqueue(&amp;q, p-&gt;right);
+}</pre></div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot ld-default"></div>未访问</div>
+            <div class="legend-item"><div class="legend-dot ld-queued"></div>队列中</div>
+            <div class="legend-item"><div class="legend-dot ld-active"></div>处理中</div>
+            <div class="legend-item"><div class="legend-dot ld-visited"></div>已访问</div>
+          </div>
+          <div class="queue-area">
+            <h4>队列（左=队头 出队 &larr; &rarr; 入队 右=队尾）</h4>
+            <div class="queue-vis" id="queue-level"></div>
+          </div>
+          <div class="result-area"><h4>遍历结果</h4><div class="result-seq" id="result-level"></div></div>
+          <div class="log-area"><h4>操作日志</h4><div id="log-level"></div></div>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /chapter-tree -->
 
 </div><!-- /demo -->
@@ -378,18 +423,49 @@ function buildPostSteps(){
   return steps;
 }
 
+function buildLevelSteps(){
+  const steps=[],queue=[],visited=[],result=[];
+  function snap(msg,activeId,hl){steps.push({queue:[...queue],visited:[...visited],result:[...result],activeId,msg,hl});}
+  snap('初始化：根节点 A 入队',null,false);
+  queue.push(1);snap(`enqueue(A) → 队列:[A]`,1,false);
+  while(queue.length){
+    const id=queue.shift();
+    snap(`dequeue() 取出 ${nodeById(id).val}`,id,true);
+    visited.push(id);result.push(id);
+    snap(`visit(${nodeById(id).val}) 访问完成`,id,true);
+    const l=TREE.left[id],r=TREE.right[id];
+    if(l){queue.push(l);snap(`enqueue(${nodeById(l).val}) 左子入队`,l,false);}
+    if(r){queue.push(r);snap(`enqueue(${nodeById(r).val}) 右子入队`,r,false);}
+  }
+  snap('层序遍历完成！ '+result.map(i=>nodeById(i).val).join('→'),null,false);
+  return steps;
+}
+
 /* ── 渲染步骤 ── */
 function applyStep(type,step){
   const svgId=`svg-${type}`;
   TREE.nodes.forEach(n=>setNode(svgId,n.id,''));
   step.visited.forEach(id=>setNode(svgId,id,'visited'));
-  step.stack.forEach(id=>setNode(svgId,id,'stacked'));
+  if(type==='level'){
+    (step.queue||[]).forEach(id=>setNode(svgId,id,'queued'));
+  } else {
+    step.stack.forEach(id=>setNode(svgId,id,'stacked'));
+  }
   if(step.activeId) setNode(svgId,step.activeId,'active');
-  document.getElementById(`stack-${type}`).innerHTML=
-    step.stack.map(id=>`<div class="stack-item">${nodeById(id).val}</div>`).join('');
-  if(type==='post'){
-    document.getElementById('stack2-post').innerHTML=
-      (step.s2||[]).map(id=>`<div class="stack-item" style="background:#1a2a0a;border-color:#3d8a2d;color:#3fb950">${nodeById(id).val}</div>`).join('');
+  if(type==='level'){
+    document.getElementById('queue-level').innerHTML=
+      (step.queue||[]).map((id,i,arr)=>{
+        const label = i===0?'<span class="queue-label">队头</span>':'';
+        const tail  = i===arr.length-1?'<span class="queue-label">队尾</span>':'';
+        return label+`<div class="queue-item">${nodeById(id).val}</div>`+tail;
+      }).join('');
+  } else {
+    document.getElementById(`stack-${type}`).innerHTML=
+      step.stack.map(id=>`<div class="stack-item">${nodeById(id).val}</div>`).join('');
+    if(type==='post'){
+      document.getElementById('stack2-post').innerHTML=
+        (step.s2||[]).map(id=>`<div class="stack-item" style="background:#1a2a0a;border-color:#3d8a2d;color:#3fb950">${nodeById(id).val}</div>`).join('');
+    }
   }
   document.getElementById(`result-${type}`).innerHTML=
     step.result.map(id=>`<div class="res-node">${nodeById(id).val}</div>`).join('');
@@ -401,9 +477,14 @@ function applyStep(type,step){
 function startDemo(type){
   if(TIMER[type]) clearInterval(TIMER[type]);
   renderSVG(`svg-${type}`);
-  ['stack-','result-','log-'].forEach(p=>document.getElementById(p+type).innerHTML='');
-  if(type==='post') document.getElementById('stack2-post').innerHTML='';
-  const builders={pre:buildPreSteps,in:buildInSteps,post:buildPostSteps};
+  ['result-','log-'].forEach(p=>document.getElementById(p+type).innerHTML='');
+  if(type==='level'){
+    document.getElementById('queue-level').innerHTML='';
+  } else {
+    document.getElementById('stack-'+type).innerHTML='';
+    if(type==='post') document.getElementById('stack2-post').innerHTML='';
+  }
+  const builders={pre:buildPreSteps,in:buildInSteps,post:buildPostSteps,level:buildLevelSteps};
   STATE[type]={steps:builders[type](),ptr:0};
   applyStep(type,STATE[type].steps[0]);
 }
@@ -444,7 +525,7 @@ function switchTab(type,btn){
 }
 
 /* ── 初始化 ── */
-['pre','in','post'].forEach(t=>renderSVG(`svg-${t}`));
+['pre','in','post','level'].forEach(t=>renderSVG(`svg-${t}`));
 </script>
 </body>
 </html>
