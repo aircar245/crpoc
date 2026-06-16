@@ -187,13 +187,12 @@
 
   <!-- 章节导航 -->
   <div class="chapter-tabs">
-    <button class="chapter-btn active" onclick="switchChapter('tree',this)">树（一）</button>
-    <button class="chapter-btn" onclick="switchChapter('tree2',this)">树（二）</button>
+    <button class="chapter-btn active" onclick="switchChapter('tree',this)">树</button>
     <button class="chapter-btn" onclick="switchChapter('heap',this)">堆</button>
     <button class="chapter-btn" onclick="switchChapter('graph',this)">图</button>
   </div>
 
-  <!-- ─── 树（一） ─── -->
+  <!-- ─── 树 ─── -->
   <div id="chapter-tree" class="chapter-wrap active">
     <div class="chapter-header">
       <h3>树</h3>
@@ -941,12 +940,11 @@ function switchChapter(id,btn){
   document.getElementById('chapter-'+id).classList.add('active');
   btn.classList.add('active');
   if(id==='heap') initHeapChapter();
-  if(id==='tree2') initTree2Chapter();
   if(id==='graph') initGraphChapter();
 }
 
 /* ════════════════════════════════════════
-   树（二）：AVL / 红黑树
+   AVL / 红黑树
    ════════════════════════════════════════ */
 
 /* ── 通用树渲染器 ── */
@@ -1258,7 +1256,7 @@ function buildRBDelSteps(cas){
   ];
 }
 
-/* ── 树（二）控制 ── */
+/* ── AVL / 红黑树 控制 ── */
 const T2STATE={},T2TIMER={};
 
 function setAVLCase(cas,btn){

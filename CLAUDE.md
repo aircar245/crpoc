@@ -12,8 +12,7 @@ C语言数据结构可视化学习页，单文件 HTML，所有逻辑内联。
 <section#basics>  基础知识讲解（6 张 b-card）
 <div#demo>     代码演示区
   .chapter-tabs   章节切换按钮
-  #chapter-tree   树（一）
-  #chapter-tree2  树（二）（空占位）
+  #chapter-tree   树
   #chapter-heap   堆
 <footer>
 ```
@@ -22,7 +21,7 @@ C语言数据结构可视化学习页，单文件 HTML，所有逻辑内联。
 
 ## 演示区章节与 Tab
 
-### 树（一） `#chapter-tree`
+### 树 `#chapter-tree`
 8 个 tab，共用 `#chapter-tree .demo-wrap / .tab-btn` 选择器：
 
 | Tab ID | 按钮文字 | 切换函数 |
@@ -35,9 +34,6 @@ C语言数据结构可视化学习页，单文件 HTML，所有逻辑内联。
 | `tab2-avl-del` | AVL 删除 | `switchTree2Tab('avl-del', btn)` |
 | `tab2-rb-ins` | 红黑树 插入 | `switchTree2Tab('rb-ins', btn)` |
 | `tab2-rb-del` | 红黑树 删除 | `switchTree2Tab('rb-del', btn)` |
-
-### 树（二） `#chapter-tree2`
-空占位，待填充。
 
 ### 堆 `#chapter-heap`
 4 个 tab：入堆 / 出堆 / 建堆 / Top-K，函数 `switchHeapTab(type, btn)`。
@@ -63,7 +59,7 @@ C语言数据结构可视化学习页，单文件 HTML，所有逻辑内联。
 
 ## JavaScript 模块
 
-### 遍历模块（树一 先/中/后/层序）
+### 遍历模块（先/中/后/层序）
 - 树结构：`const TREE = { nodes, edges, left, right }`
 - 步骤生成：`buildPreSteps / buildInSteps / buildPostSteps / buildLevelSteps`
 - 渲染：`renderSVG(svgId)` + `setNode(svgId, id, state)`
@@ -77,7 +73,7 @@ C语言数据结构可视化学习页，单文件 HTML，所有逻辑内联。
 - 控制：`startHeapDemo / stepHeapDemo / autoHeapDemo(type)`
 - 初始化：`initHeapChapter()` → 在首次切换到堆章节时调用
 
-### AVL / 红黑树模块（树（二）内容移入树（一））
+### AVL / 红黑树模块
 - 通用渲染器：`renderBSTSVG(svgId, step)`
   - `step = { nodes, edges, state, msg, hl }`
   - `state` = `{ nodeId: 'active'|'stacked'|'visited'|'rb-hl'|... }`
@@ -95,11 +91,11 @@ C语言数据结构可视化学习页，单文件 HTML，所有逻辑内联。
 - 情形选择器：`setAVLCase / setRBCase / setRBDCase(cas, btn)`
 - 控制：`startT2Demo / stepT2Demo / autoT2Demo(type)`
 - Tab 切换：`switchTree2Tab(type, btn)` → 目标 `#chapter-tree`（与遍历共享容器）
-- 初始化：`initTree2Chapter()` → 在切换到树（二）章节时调用（当前树（二）为空，实际 demo 在树（一）中）
+- 初始化：`initTree2Chapter()` → 预生成 AVL/RB 演示步骤（首次切换到对应 tab 时自动调用）
 
 ### 公共
 - 速度：`updateSpeed(type, val)` → `SPEEDS[type]`，element id 为 `speed-{type}-lbl`
-- 章节切换：`switchChapter(id, btn)` → 激活 `#chapter-{id}`，按需调用 `initHeapChapter / initTree2Chapter`
+- 章节切换：`switchChapter(id, btn)` → 激活 `#chapter-{id}`，按需调用 `initHeapChapter / initGraphChapter`
 
 ---
 
