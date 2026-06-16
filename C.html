@@ -137,6 +137,14 @@
     .insert-row{display:flex;align-items:center;gap:8px;font-size:.8rem;color:#8b949e}
     .insert-row input{width:52px;padding:3px 6px;border:1px solid #21262d;border-radius:5px;font-size:.8rem;background:#161b22;color:#e0e0e0;text-align:center}
     .topk-label{font-size:.74rem;color:#8b949e;margin-bottom:3px}
+    /* AVL / 红黑树 */
+    .node-circle.rb-red{fill:#3a0808;stroke:#cc4444;stroke-width:2.5}
+    .node-circle.rb-black{fill:#080820;stroke:#3366cc;stroke-width:2.5}
+    .node-circle.rb-hl{stroke:#ffffff;stroke-width:3}
+    .case-sel{display:flex;gap:5px;margin-bottom:6px;flex-wrap:wrap}
+    .case-btn{padding:3px 10px;border-radius:5px;border:1px solid #21262d;background:#0d1117;color:#8b949e;cursor:pointer;font-size:.74rem;transition:all .2s}
+    .case-btn:hover{border-color:#58a6ff;color:#58a6ff}
+    .case-btn.active{background:#1a2a4a;border-color:#58a6ff;color:#58a6ff;font-weight:600}
 
     footer{text-align:center;padding:32px;color:#484f58;font-size:.8rem;border-top:1px solid #21262d}
   </style>
@@ -176,14 +184,15 @@
 
   <!-- 章节导航 -->
   <div class="chapter-tabs">
-    <button class="chapter-btn active" onclick="switchChapter('tree',this)">第一章 · 树</button>
-    <button class="chapter-btn" onclick="switchChapter('heap',this)">第二章 · 堆</button>
+    <button class="chapter-btn active" onclick="switchChapter('tree',this)">树（一）</button>
+    <button class="chapter-btn" onclick="switchChapter('tree2',this)">树（二）</button>
+    <button class="chapter-btn" onclick="switchChapter('heap',this)">堆</button>
   </div>
 
-  <!-- ─── 第一章：树 ─── -->
+  <!-- ─── 树（一） ─── -->
   <div id="chapter-tree" class="chapter-wrap active">
     <div class="chapter-header">
-      <h3>第一章 · 树</h3>
+      <h3>树（一）</h3>
       <p>以栈为工具对二叉树进行非递归遍历，观察每一步压栈、弹栈与访问的过程。</p>
     </div>
 
@@ -339,10 +348,167 @@ enqueue(&amp;q, root);
 
   </div><!-- /chapter-tree -->
 
-  <!-- ─── 第二章：堆 ─── -->
+  <!-- ─── 树（二）：AVL / 红黑树 ─── -->
+  <div id="chapter-tree2" class="chapter-wrap">
+    <div class="chapter-header">
+      <h3>树（二）</h3>
+      <p>AVL 平衡树与红黑树的插入、删除，观察旋转与变色如何维持平衡。</p>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTree2Tab('avl-ins',this)">AVL 插入</button>
+      <button class="tab-btn" onclick="switchTree2Tab('avl-del',this)">AVL 删除</button>
+      <button class="tab-btn" onclick="switchTree2Tab('rb-ins',this)">红黑树 插入</button>
+      <button class="tab-btn" onclick="switchTree2Tab('rb-del',this)">红黑树 删除</button>
+    </div>
+
+    <!-- AVL 插入 -->
+    <div id="tab2-avl-ins" class="demo-wrap active">
+      <div class="demo-main">
+        <div class="demo-left">
+          <div class="case-sel">
+            <button class="case-btn active" onclick="setAVLCase('ll',this)">LL 右旋</button>
+            <button class="case-btn" onclick="setAVLCase('rr',this)">RR 左旋</button>
+            <button class="case-btn" onclick="setAVLCase('lr',this)">LR 先左后右</button>
+            <button class="case-btn" onclick="setAVLCase('rl',this)">RL 先右后左</button>
+          </div>
+          <div class="tree-area"><svg class="tree" id="svg2-avl-ins" viewBox="0 0 520 240"></svg></div>
+          <div class="controls">
+            <button class="btn btn-primary" onclick="startT2Demo('avl-ins')">▶ 开始/重置</button>
+            <button class="btn btn-secondary" onclick="stepT2Demo('avl-ins')">单步</button>
+            <button class="btn btn-secondary" onclick="autoT2Demo('avl-ins')">自动</button>
+            <div class="speed-wrap">速度<input type="range" min="200" max="2000" value="800" step="100" id="speed-t2-avl-ins" oninput="updateSpeed('t2-avl-ins',this.value)"><span id="speed-t2-avl-ins-lbl">800ms</span></div>
+          </div>
+        </div>
+        <div class="demo-right">
+          <div class="algo-code"><pre><span class="cm">// AVL 旋转修复（|bf|>1 时触发）</span>
+<span class="cm">// LL：对失衡节点 A 右旋</span>
+B = A-&gt;left;
+A-&gt;left = B-&gt;right;
+B-&gt;right = A;  <span class="cm">// B 成新根</span>
+
+<span class="cm">// RR：对 A 左旋（方向相反）</span>
+<span class="cm">// LR：先对 A->left 左旋，再对 A 右旋</span>
+<span class="cm">// RL：先对 A->right 右旋，再对 A 左旋</span></pre></div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot ld-default"></div>正常</div>
+            <div class="legend-item"><div class="legend-dot ld-active"></div>失衡节点</div>
+            <div class="legend-item"><div class="legend-dot ld-stacked"></div>旋转支点</div>
+            <div class="legend-item"><div class="legend-dot ld-visited"></div>新根/完成</div>
+          </div>
+          <div class="log-area"><h4>操作日志</h4><div id="log2-avl-ins"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AVL 删除 -->
+    <div id="tab2-avl-del" class="demo-wrap">
+      <div class="demo-main">
+        <div class="demo-left">
+          <div class="tree-area"><svg class="tree" id="svg2-avl-del" viewBox="0 0 520 240"></svg></div>
+          <div class="controls">
+            <button class="btn btn-primary" onclick="startT2Demo('avl-del')">▶ 开始/重置</button>
+            <button class="btn btn-secondary" onclick="stepT2Demo('avl-del')">单步</button>
+            <button class="btn btn-secondary" onclick="autoT2Demo('avl-del')">自动</button>
+            <div class="speed-wrap">速度<input type="range" min="200" max="2000" value="800" step="100" id="speed-t2-avl-del" oninput="updateSpeed('t2-avl-del',this.value)"><span id="speed-t2-avl-del-lbl">800ms</span></div>
+          </div>
+        </div>
+        <div class="demo-right">
+          <div class="algo-code"><pre><span class="cm">// BST 删除后向上回溯检查 bf</span>
+<span class="kw">while</span> (p != NULL) {
+    update_bf(p);
+    <span class="kw">if</span> (abs(bf(p)) > 1)
+        p = rotate(p); <span class="cm">// LL/RR/LR/RL</span>
+    p = p-&gt;parent;
+}</pre></div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot ld-active"></div>待删/失衡</div>
+            <div class="legend-item"><div class="legend-dot ld-stacked"></div>旋转支点</div>
+            <div class="legend-item"><div class="legend-dot ld-visited"></div>新根/完成</div>
+          </div>
+          <div class="log-area"><h4>操作日志</h4><div id="log2-avl-del"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 红黑树 插入 -->
+    <div id="tab2-rb-ins" class="demo-wrap">
+      <div class="demo-main">
+        <div class="demo-left">
+          <div class="case-sel">
+            <button class="case-btn active" onclick="setRBCase('recolor',this)">叔红→变色</button>
+            <button class="case-btn" onclick="setRBCase('rotate',this)">叔黑→旋转</button>
+          </div>
+          <div class="tree-area"><svg class="tree" id="svg2-rb-ins" viewBox="0 0 520 240"></svg></div>
+          <div class="controls">
+            <button class="btn btn-primary" onclick="startT2Demo('rb-ins')">▶ 开始/重置</button>
+            <button class="btn btn-secondary" onclick="stepT2Demo('rb-ins')">单步</button>
+            <button class="btn btn-secondary" onclick="autoT2Demo('rb-ins')">自动</button>
+            <div class="speed-wrap">速度<input type="range" min="200" max="2000" value="800" step="100" id="speed-t2-rb-ins" oninput="updateSpeed('t2-rb-ins',this.value)"><span id="speed-t2-rb-ins-lbl">800ms</span></div>
+          </div>
+        </div>
+        <div class="demo-right">
+          <div class="algo-code"><pre><span class="cm">// 新节点涂红，修复 R-R 冲突</span>
+<span class="cm">// Case1：叔红 → 父叔变黑，祖父变红</span>
+parent-&gt;color = BLACK;
+uncle-&gt;color  = BLACK;
+gp-&gt;color     = RED; <span class="cm">// 继续向上检查</span>
+
+<span class="cm">// Case3：叔黑，同侧 → 单旋 + 换色</span>
+rotate(gp);
+swap_color(parent, gp);</pre></div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#3a0808;border-color:#cc4444;border:2px solid #cc4444"></div>红节点(R)</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#080820;border-color:#3366cc;border:2px solid #3366cc"></div>黑节点(B)</div>
+            <div class="legend-item"><div class="legend-dot ld-active"></div>冲突节点</div>
+            <div class="legend-item"><div class="legend-dot ld-visited"></div>修复完成</div>
+          </div>
+          <div class="log-area"><h4>操作日志</h4><div id="log2-rb-ins"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 红黑树 删除 -->
+    <div id="tab2-rb-del" class="demo-wrap">
+      <div class="demo-main">
+        <div class="demo-left">
+          <div class="case-sel">
+            <button class="case-btn active" onclick="setRBDCase('leaf',this)">删红叶（无需修复）</button>
+            <button class="case-btn" onclick="setRBDCase('replace',this)">删黑节点（红子替代）</button>
+          </div>
+          <div class="tree-area"><svg class="tree" id="svg2-rb-del" viewBox="0 0 520 240"></svg></div>
+          <div class="controls">
+            <button class="btn btn-primary" onclick="startT2Demo('rb-del')">▶ 开始/重置</button>
+            <button class="btn btn-secondary" onclick="stepT2Demo('rb-del')">单步</button>
+            <button class="btn btn-secondary" onclick="autoT2Demo('rb-del')">自动</button>
+            <div class="speed-wrap">速度<input type="range" min="200" max="2000" value="800" step="100" id="speed-t2-rb-del" oninput="updateSpeed('t2-rb-del',this.value)"><span id="speed-t2-rb-del-lbl">800ms</span></div>
+          </div>
+        </div>
+        <div class="demo-right">
+          <div class="algo-code"><pre><span class="cm">// 删红叶：直接删，黑高不变</span>
+
+<span class="cm">// 删黑节点（仅有红子）：</span>
+child-&gt;color = BLACK; <span class="cm">// 子染黑补偿</span>
+replace(node, child); <span class="cm">// 子替代父</span>
+
+<span class="cm">// 删黑叶（更复杂情形）：</span>
+<span class="cm">// 产生"双黑"，分四种 Case 修复</span>
+<span class="cm">// （见教材）</span></pre></div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#3a0808;border-color:#cc4444;border:2px solid #cc4444"></div>红节点(R)</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#080820;border-color:#3366cc;border:2px solid #3366cc"></div>黑节点(B)</div>
+            <div class="legend-item"><div class="legend-dot ld-active"></div>待删节点</div>
+            <div class="legend-item"><div class="legend-dot ld-visited"></div>修复完成</div>
+          </div>
+          <div class="log-area"><h4>操作日志</h4><div id="log2-rb-del"></div></div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /chapter-tree2 -->
+
+  <!-- ─── 堆 ─── -->
   <div id="chapter-heap" class="chapter-wrap">
     <div class="chapter-header">
-      <h3>第二章 · 堆</h3>
+      <h3>堆</h3>
       <p>大根堆的入堆、出堆、建堆，以及用小根堆求 Top-K 的完整过程。</p>
     </div>
     <div class="tabs" id="heap-tabs">
@@ -693,6 +859,248 @@ function switchChapter(id,btn){
   document.getElementById('chapter-'+id).classList.add('active');
   btn.classList.add('active');
   if(id==='heap') initHeapChapter();
+  if(id==='tree2') initTree2Chapter();
+}
+
+/* ════════════════════════════════════════
+   树（二）：AVL / 红黑树
+   ════════════════════════════════════════ */
+
+/* ── 通用树渲染器 ── */
+function layoutTree(nodes,rid,x,y,sp){
+  x=x||260;y=y||38;sp=sp||110;
+  const n=nodes.find(nd=>nd.id===rid);if(!n)return;
+  n.x=x;n.y=y;
+  if(n.left)  layoutTree(nodes,n.left, x-sp,y+82,Math.max(sp*.55,40));
+  if(n.right) layoutTree(nodes,n.right,x+sp,y+82,Math.max(sp*.55,40));
+}
+function buildEdges(nodes){
+  const e=[];nodes.forEach(n=>{
+    if(n.left) e.push({from:n.id,to:n.left});
+    if(n.right)e.push({from:n.id,to:n.right});
+  });return e;
+}
+function _snap(nodes,root,state,msg,hl){
+  const ns=nodes.map(n=>({...n}));
+  layoutTree(ns,root);
+  return{nodes:ns,edges:buildEdges(ns),state:state||{},msg:msg||'',hl:!!hl};
+}
+
+function renderBSTSVG(svgId,step){
+  const svg=document.getElementById(svgId);if(!svg)return;svg.innerHTML='';
+  const{nodes=[],edges=[],state={}}=step,R=20;
+  edges.forEach(e=>{
+    const a=nodes.find(n=>n.id===e.from),b=nodes.find(n=>n.id===e.to);if(!a||!b)return;
+    const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+    const ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+    ln.setAttribute('x1',a.x+dx/d*R);ln.setAttribute('y1',a.y+dy/d*R);
+    ln.setAttribute('x2',b.x-dx/d*R);ln.setAttribute('y2',b.y-dy/d*R);
+    ln.setAttribute('class','edge');svg.appendChild(ln);
+  });
+  nodes.forEach(n=>{
+    const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',n.x);c.setAttribute('cy',n.y);c.setAttribute('r',R);
+    let cls='node-circle';
+    if(n.color==='R')cls+=' rb-red';
+    else if(n.color==='B')cls+=' rb-black';
+    const st=state[n.id]||'';if(st)cls+=' '+st;
+    c.setAttribute('class',cls);g.appendChild(c);
+    const tv=document.createElementNS('http://www.w3.org/2000/svg','text');
+    tv.setAttribute('x',n.x);tv.setAttribute('y',(n.bf!==undefined||n.color)?n.y-3:n.y);
+    tv.setAttribute('class','node-text');tv.setAttribute('font-size','13');
+    tv.textContent=n.val;g.appendChild(tv);
+    if(n.bf!==undefined){
+      const bt=document.createElementNS('http://www.w3.org/2000/svg','text');
+      bt.setAttribute('x',n.x);bt.setAttribute('y',n.y+12);
+      bt.setAttribute('text-anchor','middle');bt.setAttribute('font-size','9');
+      bt.setAttribute('fill',Math.abs(n.bf)>1?'#e05050':'#6b7280');
+      bt.textContent=(n.bf>=0?'+':'')+n.bf;g.appendChild(bt);
+    }
+    if(n.color){
+      const ct=document.createElementNS('http://www.w3.org/2000/svg','text');
+      ct.setAttribute('x',n.x);ct.setAttribute('y',n.y+12);
+      ct.setAttribute('text-anchor','middle');ct.setAttribute('font-size','9');
+      ct.setAttribute('fill','#aaa');ct.textContent=n.color;g.appendChild(ct);
+    }
+    svg.appendChild(g);
+  });
+}
+
+/* ── AVL 插入（4 旋转情形） ── */
+let AVLCASE='ll',RBCASE='recolor',RBDCASE='leaf';
+
+function buildAVLInsSteps(cas){
+  if(cas==='ll'){
+    const t0=[{id:'A',val:30,left:'B',bf:-1},{id:'B',val:20,bf:0}];
+    const t1=[{id:'A',val:30,left:'B',bf:-2},{id:'B',val:20,left:'C',bf:-1},{id:'C',val:10,bf:0}];
+    const t2=[{id:'B',val:20,left:'C',right:'A',bf:0},{id:'C',val:10,bf:0},{id:'A',val:30,bf:0}];
+    return[
+      _snap(t0,'A',{},'初始树 [30,20]，bf(30)=-1。插入 10 将触发 LL 失衡。',false),
+      _snap(t1,'A',{A:'active',B:'stacked',C:'visited'},'插入 10，bf(30)=-2（失衡！）。左左情形：失衡节点 A=30，旋转支点 B=20。',true),
+      _snap(t1,'A',{A:'active',B:'active'},'对 A=30 做右旋：B 上移，B 的右子（若有）归还给 A 的左子。',true),
+      _snap(t2,'B',{B:'visited'},'右旋完成，20 为新根，bf 全为 0，AVL 性质恢复！',false),
+    ];
+  }
+  if(cas==='rr'){
+    const t0=[{id:'A',val:10,right:'B',bf:1},{id:'B',val:20,bf:0}];
+    const t1=[{id:'A',val:10,right:'B',bf:2},{id:'B',val:20,right:'C',bf:1},{id:'C',val:30,bf:0}];
+    const t2=[{id:'B',val:20,left:'A',right:'C',bf:0},{id:'A',val:10,bf:0},{id:'C',val:30,bf:0}];
+    return[
+      _snap(t0,'A',{},'初始树 [10,20]，bf(10)=+1。插入 30 将触发 RR 失衡。',false),
+      _snap(t1,'A',{A:'active',B:'stacked',C:'visited'},'插入 30，bf(10)=+2（失衡！）。右右情形：失衡节点 A=10，旋转支点 B=20。',true),
+      _snap(t1,'A',{A:'active',B:'active'},'对 A=10 做左旋：B 上移，B 的左子（若有）归还给 A 的右子。',true),
+      _snap(t2,'B',{B:'visited'},'左旋完成，20 为新根，bf 全为 0，AVL 性质恢复！',false),
+    ];
+  }
+  if(cas==='lr'){
+    const t0=[{id:'A',val:30,left:'B',bf:-1},{id:'B',val:10,bf:0}];
+    const t1=[{id:'A',val:30,left:'B',bf:-2},{id:'B',val:10,right:'C',bf:1},{id:'C',val:20,bf:0}];
+    const t2=[{id:'A',val:30,left:'C',bf:-2},{id:'C',val:20,left:'B',bf:-1},{id:'B',val:10,bf:0}];
+    const t3=[{id:'C',val:20,left:'B',right:'A',bf:0},{id:'B',val:10,bf:0},{id:'A',val:30,bf:0}];
+    return[
+      _snap(t0,'A',{},'初始树 [30,10]，bf(30)=-1。插入 20（10 的右子）将触发 LR 失衡。',false),
+      _snap(t1,'A',{A:'active',B:'stacked',C:'visited'},'插入 20，bf(30)=-2（失衡！）。左右情形，需两次旋转。',true),
+      _snap(t1,'A',{B:'active',C:'active'},'第一步：对 B=10 左旋，将 LR 转化为 LL 情形。',true),
+      _snap(t2,'A',{A:'active',C:'stacked'},'转为 LL 情形（A=30 失衡，左子 C=20），再对 A 右旋。',true),
+      _snap(t3,'C',{C:'visited'},'右旋完成，20 为新根，10/30 各居左右，AVL 性质恢复！',false),
+    ];
+  }
+  // rl
+  const t0=[{id:'A',val:10,right:'B',bf:1},{id:'B',val:30,bf:0}];
+  const t1=[{id:'A',val:10,right:'B',bf:2},{id:'B',val:30,left:'C',bf:-1},{id:'C',val:20,bf:0}];
+  const t2=[{id:'A',val:10,right:'C',bf:2},{id:'C',val:20,right:'B',bf:1},{id:'B',val:30,bf:0}];
+  const t3=[{id:'C',val:20,left:'A',right:'B',bf:0},{id:'A',val:10,bf:0},{id:'B',val:30,bf:0}];
+  return[
+    _snap(t0,'A',{},'初始树 [10,30]，bf(10)=+1。插入 20（30 的左子）将触发 RL 失衡。',false),
+    _snap(t1,'A',{A:'active',B:'stacked',C:'visited'},'插入 20，bf(10)=+2（失衡！）。右左情形，需两次旋转。',true),
+    _snap(t1,'A',{B:'active',C:'active'},'第一步：对 B=30 右旋，将 RL 转化为 RR 情形。',true),
+    _snap(t2,'A',{A:'active',C:'stacked'},'转为 RR 情形（A=10 失衡，右子 C=20），再对 A 左旋。',true),
+    _snap(t3,'C',{C:'visited'},'左旋完成，20 为新根，10/30 各居左右，AVL 性质恢复！',false),
+  ];
+}
+
+/* ── AVL 删除 ── */
+function buildAVLDelSteps(){
+  const t0=[{id:'R',val:50,left:'L',right:'RR',bf:-1},{id:'L',val:20,left:'LL',bf:-1},{id:'RR',val:70,bf:0},{id:'LL',val:10,bf:0}];
+  const t2=[{id:'R',val:50,left:'L',bf:-2},{id:'L',val:20,left:'LL',bf:-1},{id:'LL',val:10,bf:0}];
+  const t3=[{id:'L',val:20,left:'LL',right:'R',bf:0},{id:'LL',val:10,bf:0},{id:'R',val:50,bf:0}];
+  return[
+    _snap(t0,'R',{},'初始 AVL 树 [50,20,70,10]，各 bf ∈ {-1,0}。即将删除 70。',false),
+    _snap(t0,'R',{RR:'active'},'找到叶子节点 70，直接删除。',true),
+    _snap(t2,'R',{R:'active',L:'stacked'},'删后 bf(50)=-2（失衡！）。左子树高=2，右子树高=0，LL 情形。',true),
+    _snap(t2,'R',{R:'active',L:'active'},'对 50 做右旋，以 20 为支点。',true),
+    _snap(t3,'L',{L:'visited'},'右旋完成，20 为新根，10/50 各居左右，AVL 性质恢复！',false),
+  ];
+}
+
+/* ── 红黑树 插入 ── */
+function buildRBInsSteps(cas){
+  if(cas==='recolor'){
+    const t0=[{id:'G',val:20,left:'P',right:'U',color:'B'},{id:'P',val:10,color:'R'},{id:'U',val:30,color:'R'}];
+    const t1=[{id:'G',val:20,left:'P',right:'U',color:'B'},{id:'P',val:10,color:'R'},{id:'U',val:30,right:'N',color:'R'},{id:'N',val:35,color:'R'}];
+    const t2=[{id:'G',val:20,left:'P',right:'U',color:'R'},{id:'P',val:10,color:'B'},{id:'U',val:30,right:'N',color:'B'},{id:'N',val:35,color:'R'}];
+    const t3=[{id:'G',val:20,left:'P',right:'U',color:'B'},{id:'P',val:10,color:'B'},{id:'U',val:30,right:'N',color:'B'},{id:'N',val:35,color:'R'}];
+    return[
+      _snap(t0,'G',{},'初始红黑树：20(B) 为根，10(R)、30(R) 为子节点。即将插入 35。',false),
+      _snap(t1,'G',{N:'active',U:'stacked'},'35 插入为 30 的右子（涂红）。父 30 也是红色 → 红红冲突！',true),
+      _snap(t1,'G',{N:'active',U:'stacked',P:'stacked'},'叔节点 10 是红色 → Case1：父叔变黑，祖父 20 变红，继续向上检查。',true),
+      _snap(t2,'G',{G:'active'},'祖父 20 变红但它是根，必须强制变黑（根始终为黑）。',true),
+      _snap(t3,'G',{G:'visited'},'根变黑，修复完成！无冲突，所有路径黑高相同。',false),
+    ];
+  }
+  // 叔黑→旋转
+  const t0=[{id:'A',val:20,right:'B',color:'B'},{id:'B',val:30,color:'R'}];
+  const t1=[{id:'A',val:20,right:'B',color:'B'},{id:'B',val:30,right:'C',color:'R'},{id:'C',val:40,color:'R'}];
+  const t2=[{id:'B',val:30,left:'A',right:'C',color:'B'},{id:'A',val:20,color:'R'},{id:'C',val:40,color:'R'}];
+  return[
+    _snap(t0,'A',{},'初始树：20(B) 根，30(R) 右子。即将插入 40。',false),
+    _snap(t1,'A',{C:'active',B:'stacked'},'40 插入为 30 的右子（涂红）。父 30 是红色 → 红红冲突！',true),
+    _snap(t1,'A',{A:'active',B:'stacked'},'叔节点（20 的左子）为 NULL（黑），同侧（右右）→ Case3：对祖父 20 左旋。',true),
+    _snap(t2,'B',{B:'visited'},'左旋后 30 变黑为新根，20 变红居左，40 保持红居右。修复完成！',false),
+  ];
+}
+
+/* ── 红黑树 删除 ── */
+function buildRBDelSteps(cas){
+  const t0=[{id:'R',val:20,left:'L',right:'RN',color:'B'},{id:'L',val:10,color:'B'},{id:'RN',val:30,right:'RR',color:'B'},{id:'RR',val:35,color:'R'}];
+  if(cas==='leaf'){
+    const t2=[{id:'R',val:20,left:'L',right:'RN',color:'B'},{id:'L',val:10,color:'B'},{id:'RN',val:30,color:'B'}];
+    return[
+      _snap(t0,'R',{},'初始红黑树，含红色叶子 35(R)。即将删除 35。',false),
+      _snap(t0,'R',{RR:'active'},'定位到目标 35（红色叶子节点）。',true),
+      _snap(t2,'R',{RN:'visited'},'删除红色叶子，不影响任何路径的黑高度，无需修复。✓',false),
+    ];
+  }
+  // 删黑节点（有红子）
+  const t2=[{id:'R',val:20,left:'L',right:'RR',color:'B'},{id:'L',val:10,color:'B'},{id:'RR',val:35,color:'B'}];
+  return[
+    _snap(t0,'R',{},'初始红黑树。即将删除黑色节点 30（只有红色右子 35）。',false),
+    _snap(t0,'R',{RN:'active',RR:'stacked'},'30 是黑色，仅有一个红色子节点 35 → 将子提升并染黑。',true),
+    _snap(t2,'R',{RR:'visited'},'35 替换 30 的位置并变黑，黑高不变，无冲突。✓',false),
+  ];
+}
+
+/* ── 树（二）控制 ── */
+const T2STATE={},T2TIMER={};
+
+function setAVLCase(cas,btn){
+  AVLCASE=cas;
+  document.querySelectorAll('#tab2-avl-ins .case-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');startT2Demo('avl-ins');
+}
+function setRBCase(cas,btn){
+  RBCASE=cas;
+  document.querySelectorAll('#tab2-rb-ins .case-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');startT2Demo('rb-ins');
+}
+function setRBDCase(cas,btn){
+  RBDCASE=cas;
+  document.querySelectorAll('#tab2-rb-del .case-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');startT2Demo('rb-del');
+}
+function startT2Demo(type){
+  if(T2TIMER[type])clearInterval(T2TIMER[type]);
+  const builders={
+    'avl-ins':()=>buildAVLInsSteps(AVLCASE),
+    'avl-del':buildAVLDelSteps,
+    'rb-ins':()=>buildRBInsSteps(RBCASE),
+    'rb-del':()=>buildRBDelSteps(RBDCASE),
+  };
+  const steps=builders[type]();
+  T2STATE[type]={steps,ptr:0};
+  renderBSTSVG('svg2-'+type,steps[0]);
+  const lv=document.getElementById('log2-'+type);if(lv)lv.innerHTML='';
+}
+function _applyT2(type){
+  const s=T2STATE[type],step=s.steps[s.ptr];
+  renderBSTSVG('svg2-'+type,step);
+  const lv=document.getElementById('log2-'+type);
+  if(lv)lv.innerHTML=`<div class="log-line${step.hl?' highlight':''}">步骤${s.ptr}：<span>${step.msg}</span></div>`;
+}
+function stepT2Demo(type){
+  if(!T2STATE[type])startT2Demo(type);
+  const s=T2STATE[type];
+  if(s.ptr<s.steps.length-1){s.ptr++;_applyT2(type);}
+}
+function autoT2Demo(type){
+  if(T2TIMER[type])clearInterval(T2TIMER[type]);
+  if(!T2STATE[type])startT2Demo(type);
+  T2TIMER[type]=setInterval(()=>{
+    const s=T2STATE[type];
+    if(s.ptr>=s.steps.length-1){clearInterval(T2TIMER[type]);return;}
+    s.ptr++;_applyT2(type);
+  },SPEEDS['t2-'+type]||800);
+}
+function switchTree2Tab(type,btn){
+  document.querySelectorAll('#chapter-tree2 .demo-wrap').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('#chapter-tree2 .tab-btn').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab2-'+type).classList.add('active');
+  btn.classList.add('active');
+  if(!T2STATE[type])startT2Demo(type);
+}
+function initTree2Chapter(){
+  ['avl-ins','avl-del','rb-ins','rb-del'].forEach(t=>{if(!T2STATE[t])startT2Demo(t);});
 }
 
 /* ════════════════════════════════════════
