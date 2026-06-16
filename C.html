@@ -145,6 +145,9 @@
     .case-btn{padding:3px 10px;border-radius:5px;border:1px solid #21262d;background:#0d1117;color:#8b949e;cursor:pointer;font-size:.74rem;transition:all .2s}
     .case-btn:hover{border-color:#58a6ff;color:#58a6ff}
     .case-btn.active{background:#1a2a4a;border-color:#58a6ff;color:#58a6ff;font-weight:600}
+    /* AOE 关键路径 */
+    .node-circle.critical{fill:#2a2800;stroke:#c8a000}
+    .ld-critical{background:#2a2800;border-color:#c8a000}
 
     footer{text-align:center;padding:32px;color:#484f58;font-size:.8rem;border-top:1px solid #21262d}
   </style>
@@ -187,6 +190,7 @@
     <button class="chapter-btn active" onclick="switchChapter('tree',this)">树（一）</button>
     <button class="chapter-btn" onclick="switchChapter('tree2',this)">树（二）</button>
     <button class="chapter-btn" onclick="switchChapter('heap',this)">堆</button>
+    <button class="chapter-btn" onclick="switchChapter('graph',this)">图</button>
   </div>
 
   <!-- ─── 树（一） ─── -->
@@ -660,6 +664,94 @@ i = 1;
     </div>
   </div><!-- /chapter-heap -->
 
+  <!-- ─── 图 ─── -->
+  <div id="chapter-graph" class="chapter-wrap">
+    <div class="chapter-header">
+      <h3>图</h3>
+      <p>AOE 网关键路径：最早/最晚发生时间 &amp; 关键路径求取</p>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchCPMTab('ex1',this)">例1（6事件）</button>
+      <button class="tab-btn" onclick="switchCPMTab('ex2',this)">例2（7事件）</button>
+    </div>
+
+    <!-- 例1 -->
+    <div id="tab-cpm-ex1" class="demo-wrap active">
+      <div class="demo-main">
+        <div class="demo-left">
+          <div class="tree-area"><svg class="tree" id="svg-cpm-ex1" viewBox="0 0 520 270"></svg></div>
+          <div class="controls">
+            <button class="btn btn-primary" onclick="startCPMDemo('ex1')">▶ 开始/重置</button>
+            <button class="btn btn-secondary" onclick="stepCPMDemo('ex1')">单步</button>
+            <button class="btn btn-secondary" onclick="autoCPMDemo('ex1')">自动</button>
+            <div class="speed-wrap">速度<input type="range" min="200" max="2000" value="900" step="100" id="speed-cpm" oninput="updateSpeed('cpm',this.value)"><span id="speed-cpm-lbl">900ms</span></div>
+          </div>
+        </div>
+        <div class="demo-right">
+          <div class="algo-code"><pre><span class="cm">// 前向：VE（拓扑序）</span>
+ve[source] = 0;
+<span class="kw">for</span> v <span class="kw">in</span> topoOrder:
+  ve[v] = max(ve[u]+w(u,v))
+         <span class="kw">for</span> all u→v
+
+<span class="cm">// 后向：VL（逆拓扑序）</span>
+vl[sink] = ve[sink];
+<span class="kw">for</span> v <span class="kw">in</span> reverseOrder:
+  vl[v] = min(vl[u]-w(v,u))
+         <span class="kw">for</span> all v→u
+
+<span class="cm">// 关键活动：ve[u]+w == vl[v]</span></pre></div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot ld-default"></div>未处理</div>
+            <div class="legend-item"><div class="legend-dot ld-active"></div>当前计算</div>
+            <div class="legend-item"><div class="legend-dot ld-visited"></div>已求出</div>
+            <div class="legend-item"><div class="legend-dot ld-critical"></div>关键路径</div>
+          </div>
+          <div style="font-size:.72rem;color:#484f58;margin:4px 0">节点内=事件编号，节点下=VE/VL</div>
+          <div class="log-area"><h4>操作日志</h4><div id="log-cpm-ex1"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 例2 -->
+    <div id="tab-cpm-ex2" class="demo-wrap">
+      <div class="demo-main">
+        <div class="demo-left">
+          <div class="tree-area"><svg class="tree" id="svg-cpm-ex2" viewBox="0 0 610 270"></svg></div>
+          <div class="controls">
+            <button class="btn btn-primary" onclick="startCPMDemo('ex2')">▶ 开始/重置</button>
+            <button class="btn btn-secondary" onclick="stepCPMDemo('ex2')">单步</button>
+            <button class="btn btn-secondary" onclick="autoCPMDemo('ex2')">自动</button>
+            <div class="speed-wrap">速度<input type="range" min="200" max="2000" value="900" step="100" id="speed-cpm2" oninput="updateSpeed('cpm',this.value)"><span id="speed-cpm2-lbl">900ms</span></div>
+          </div>
+        </div>
+        <div class="demo-right">
+          <div class="algo-code"><pre><span class="cm">// 前向：VE（拓扑序）</span>
+ve[source] = 0;
+<span class="kw">for</span> v <span class="kw">in</span> topoOrder:
+  ve[v] = max(ve[u]+w(u,v))
+         <span class="kw">for</span> all u→v
+
+<span class="cm">// 后向：VL（逆拓扑序）</span>
+vl[sink] = ve[sink];
+<span class="kw">for</span> v <span class="kw">in</span> reverseOrder:
+  vl[v] = min(vl[u]-w(v,u))
+         <span class="kw">for</span> all v→u
+
+<span class="cm">// 关键活动：ve[u]+w == vl[v]</span></pre></div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot ld-default"></div>未处理</div>
+            <div class="legend-item"><div class="legend-dot ld-active"></div>当前计算</div>
+            <div class="legend-item"><div class="legend-dot ld-visited"></div>已求出</div>
+            <div class="legend-item"><div class="legend-dot ld-critical"></div>关键路径</div>
+          </div>
+          <div style="font-size:.72rem;color:#484f58;margin:4px 0">节点内=事件编号，节点下=VE/VL</div>
+          <div class="log-area"><h4>操作日志</h4><div id="log-cpm-ex2"></div></div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /chapter-graph -->
+
 </div><!-- /demo -->
 
 <footer>C语言数据结构可视化演示 &copy; 2024</footer>
@@ -858,6 +950,7 @@ function switchChapter(id,btn){
   btn.classList.add('active');
   if(id==='heap') initHeapChapter();
   if(id==='tree2') initTree2Chapter();
+  if(id==='graph') initGraphChapter();
 }
 
 /* ════════════════════════════════════════
@@ -1326,6 +1419,154 @@ function switchTab(type,btn){
 
 /* ── 初始化 ── */
 ['pre','in','post','level'].forEach(t=>renderSVG(`svg-${t}`));
+
+/* ════════════════════════════════════════
+   图：AOE 网关键路径
+   ════════════════════════════════════════ */
+const CPM_DEFS={
+  ex1:{
+    nodes:[{id:0,x:55,y:135},{id:1,x:190,y:65},{id:2,x:190,y:205},
+           {id:3,x:340,y:65},{id:4,x:340,y:205},{id:5,x:465,y:135}],
+    edges:[{f:0,t:1,w:3},{f:0,t:2,w:2},{f:1,t:3,w:4},{f:2,t:3,w:3},
+           {f:1,t:4,w:6},{f:3,t:5,w:2},{f:4,t:5,w:1}]
+  },
+  ex2:{
+    nodes:[{id:0,x:50,y:135},{id:1,x:175,y:60},{id:2,x:175,y:210},
+           {id:3,x:320,y:60},{id:4,x:320,y:210},{id:5,x:455,y:135},{id:6,x:560,y:135}],
+    edges:[{f:0,t:1,w:6},{f:0,t:2,w:3},{f:1,t:3,w:5},{f:2,t:3,w:4},
+           {f:2,t:4,w:3},{f:3,t:5,w:2},{f:4,t:5,w:4},{f:5,t:6,w:3}]
+  }
+};
+
+function buildCPMSteps(key){
+  const def=CPM_DEFS[key];
+  const N=def.nodes.length;
+  const ve=Array(N).fill(null),vl=Array(N).fill(null);
+  const outE=Array.from({length:N},()=>[]),inE=Array.from({length:N},()=>[]);
+  def.edges.forEach(e=>{outE[e.f].push({to:e.t,w:e.w});inE[e.t].push({from:e.f,w:e.w});});
+  const indeg=Array(N).fill(0);
+  def.edges.forEach(e=>indeg[e.t]++);
+  const q=[],topo=[];
+  for(let i=0;i<N;i++)if(indeg[i]===0)q.push(i);
+  while(q.length){const v=q.shift();topo.push(v);outE[v].forEach(({to})=>{if(--indeg[to]===0)q.push(to);});}
+  const source=topo[0],sink=topo[topo.length-1];
+  const ns={},es={};
+  function snap(msg){
+    return{
+      nodes:def.nodes.map(n=>({...n,ve:ve[n.id]!==null?ve[n.id]:'?',vl:vl[n.id]!==null?vl[n.id]:'?',state:ns[n.id]||''})),
+      edges:def.edges.map(e=>({...e,state:es[e.f+'-'+e.t]||''})),
+      msg
+    };
+  }
+  const steps=[];
+  steps.push(snap('初始AOE网，所有事件VE、VL待求（节点下显示VE/VL）'));
+  topo.forEach(v=>{
+    Object.keys(ns).forEach(k=>{if(ns[k]==='active')ns[k]='visited';});
+    Object.keys(es).forEach(k=>{if(es[k]==='active')es[k]='visited';});
+    ns[v]='active';
+    if(v===source){
+      ve[v]=0;
+      steps.push(snap('前向 ▶ ve[v'+v+']=0（源点，项目起点）'));
+    } else {
+      inE[v].forEach(({from})=>{es[from+'-'+v]='active';});
+      ve[v]=Math.max(...inE[v].map(({from,w})=>ve[from]+w));
+      const det=inE[v].map(({from,w})=>'ve[v'+from+']+'+w+'='+(ve[from]+w)).join('，');
+      steps.push(snap('前向 ▶ ve[v'+v+'] = max('+det+') = '+ve[v]));
+    }
+  });
+  Object.keys(ns).forEach(k=>{if(ns[k]==='active')ns[k]='visited';});
+  Object.keys(es).forEach(k=>{if(es[k]==='active')es[k]='visited';});
+  vl[sink]=ve[sink];
+  const rTopo=[...topo].reverse();
+  rTopo.forEach(v=>{
+    Object.keys(ns).forEach(k=>{if(ns[k]==='active')ns[k]='visited';});
+    Object.keys(es).forEach(k=>{if(es[k]==='active')es[k]='visited';});
+    ns[v]='active';
+    if(v===sink){
+      steps.push(snap('后向 ◀ vl[v'+v+']=ve[v'+v+']='+vl[v]+'（汇点，项目终点）'));
+    } else {
+      outE[v].forEach(({to})=>{es[v+'-'+to]='active';});
+      vl[v]=Math.min(...outE[v].map(({to,w})=>vl[to]-w));
+      const det=outE[v].map(({to,w})=>'vl[v'+to+']-'+w+'='+(vl[to]-w)).join('，');
+      steps.push(snap('后向 ◀ vl[v'+v+'] = min('+det+') = '+vl[v]));
+    }
+  });
+  def.nodes.forEach(n=>{ns[n.id]='';});
+  def.edges.forEach(e=>{es[e.f+'-'+e.t]='';});
+  const critE=def.edges.filter(e=>ve[e.f]+e.w===vl[e.t]);
+  const critN=new Set();
+  critE.forEach(e=>{es[e.f+'-'+e.t]='critical';critN.add(e.f);critN.add(e.t);});
+  critN.forEach(v=>{ns[v]='critical';});
+  const pathStr=critE.map(e=>'v'+e.f+'→v'+e.t+'(权'+e.w+')').join('，');
+  steps.push(snap('关键路径（松弛量=0）：'+pathStr+'，项目工期='+ve[sink]));
+  return steps;
+}
+
+function renderAOESVG(svgId,step){
+  const svg=document.getElementById(svgId);if(!svg)return;
+  const R=22;
+  const nc={'':['#0d1117','#2d4a7a'],active:['#4a3a10','#f0883e'],visited:['#1a4a2a','#2d8a4a'],critical:['#2a2800','#c8a000']};
+  const ec={'':'#333a48',active:'#f0883e',visited:'#2d8a4a',critical:'#c8a000'};
+  const mkid={'':'arn',active:'ara',visited:'arv',critical:'arc'};
+  const mkCol={'':'#333a48',active:'#f0883e',visited:'#2d8a4a',critical:'#c8a000'};
+  let h='<defs>'+['','active','visited','critical'].map(function(s){return '<marker id="'+mkid[s]+'" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="'+mkCol[s]+'"/></marker>';}).join('')+'</defs>';
+  step.edges.forEach(function(e){
+    const fn=step.nodes.find(function(n){return n.id===e.f;}),tn=step.nodes.find(function(n){return n.id===e.t;});
+    const dx=tn.x-fn.x,dy=tn.y-fn.y,len=Math.sqrt(dx*dx+dy*dy);
+    const ux=dx/len,uy=dy/len;
+    const x1=fn.x+ux*R,y1=fn.y+uy*R,x2=tn.x-ux*(R+5),y2=tn.y-uy*(R+5);
+    const col=ec[e.state]||ec[''];
+    const sw=e.state==='critical'?3:2;
+    h+='<line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="'+col+'" stroke-width="'+sw+'" marker-end="url(#'+(mkid[e.state]||'arn')+')"/>';
+    const mx=(x1+x2)/2,my=(y1+y2)/2,px=-uy*13,py=ux*13;
+    h+='<text x="'+(mx+px).toFixed(1)+'" y="'+(my+py).toFixed(1)+'" fill="'+col+'" font-size="11" font-weight="700" text-anchor="middle" dominant-baseline="central">'+e.w+'</text>';
+  });
+  step.nodes.forEach(function(n){
+    const fill=nc[n.state]?nc[n.state][0]:nc[''][0];
+    const stroke=nc[n.state]?nc[n.state][1]:nc[''][1];
+    h+='<circle cx="'+n.x+'" cy="'+n.y+'" r="'+R+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="2"/>';
+    h+='<text x="'+n.x+'" y="'+n.y+'" fill="#e0e0e0" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="central">v'+n.id+'</text>';
+    const veStr=n.ve==='?'?'?':n.ve,vlStr=n.vl==='?'?'?':n.vl;
+    const col2=n.state==='critical'?'#c8a000':n.state==='active'?'#f0883e':'#8b949e';
+    h+='<text x="'+n.x+'" y="'+(n.y+R+13)+'" fill="'+col2+'" font-size="10" text-anchor="middle">'+veStr+'/'+vlStr+'</text>';
+  });
+  svg.innerHTML=h;
+}
+
+const CPMSTATE={},CPMTIMER={};
+function startCPMDemo(key){
+  if(CPMTIMER[key])clearInterval(CPMTIMER[key]);
+  CPMSTATE[key]={steps:buildCPMSteps(key),ptr:0};
+  _applyCPM(key);
+}
+function stepCPMDemo(key){
+  if(!CPMSTATE[key])startCPMDemo(key);
+  const s=CPMSTATE[key];
+  if(s.ptr<s.steps.length-1){s.ptr++;_applyCPM(key);}
+}
+function autoCPMDemo(key){
+  if(CPMTIMER[key])clearInterval(CPMTIMER[key]);
+  if(!CPMSTATE[key])startCPMDemo(key);
+  CPMTIMER[key]=setInterval(function(){
+    const s=CPMSTATE[key];
+    if(s.ptr>=s.steps.length-1){clearInterval(CPMTIMER[key]);return;}
+    s.ptr++;_applyCPM(key);
+  },SPEEDS['cpm']||900);
+}
+function _applyCPM(key){
+  const step=CPMSTATE[key].steps[CPMSTATE[key].ptr];
+  renderAOESVG('svg-cpm-'+key,step);
+  document.getElementById('log-cpm-'+key).innerHTML='<div class="log-line highlight"><span>'+step.msg+'</span></div>';
+}
+function switchCPMTab(key,btn){
+  document.querySelectorAll('#chapter-graph .demo-wrap').forEach(function(el){el.classList.remove('active');});
+  document.querySelectorAll('#chapter-graph .tab-btn').forEach(function(el){el.classList.remove('active');});
+  document.getElementById('tab-cpm-'+key).classList.add('active');
+  btn.classList.add('active');
+  if(!CPMSTATE[key])startCPMDemo(key);
+}
+function initGraphChapter(){['ex1','ex2'].forEach(function(k){if(!CPMSTATE[k])startCPMDemo(k);});}
+
 </script>
 </body>
 </html>
