@@ -1023,112 +1023,246 @@ let AVLCASE='ll',RBCASE='recolor',RBDCASE='leaf';
 
 function buildAVLInsSteps(cas){
   if(cas==='ll'){
-    const t0=[{id:'A',val:30,left:'B',bf:-1},{id:'B',val:20,bf:0}];
-    const t1=[{id:'A',val:30,left:'B',bf:-2},{id:'B',val:20,left:'C',bf:-1},{id:'C',val:10,bf:0}];
-    const t2=[{id:'B',val:20,left:'C',right:'A',bf:0},{id:'C',val:10,bf:0},{id:'A',val:30,bf:0}];
+    /* 初始5节点[50,30,70,20,40]，插入10 → LL失衡于50 */
+    const t0=[
+      {id:'A',val:50,left:'B',right:'C',bf:-1},
+      {id:'B',val:30,left:'D',right:'E',bf:0},
+      {id:'C',val:70,bf:0},{id:'D',val:20,bf:0},{id:'E',val:40,bf:0}
+    ];
+    const t1=[
+      {id:'A',val:50,left:'B',right:'C',bf:-2},
+      {id:'B',val:30,left:'D',right:'E',bf:-1},
+      {id:'C',val:70,bf:0},{id:'D',val:20,left:'F',bf:-1},
+      {id:'E',val:40,bf:0},{id:'F',val:10,bf:0}
+    ];
+    /* 右旋后：B(30)为根，B.right=A，A.left=E(40)，A.right=C */
+    const t2=[
+      {id:'B',val:30,left:'D',right:'A',bf:0},
+      {id:'D',val:20,left:'F',bf:-1},{id:'A',val:50,left:'E',right:'C',bf:0},
+      {id:'F',val:10,bf:0},{id:'E',val:40,bf:0},{id:'C',val:70,bf:0}
+    ];
     return[
-      _snap(t0,'A',{},'初始树 [30,20]，bf(30)=-1。插入 10 将触发 LL 失衡。',false),
-      _snap(t1,'A',{A:'active',B:'stacked',C:'visited'},'插入 10，bf(30)=-2（失衡！）。左左情形：失衡节点 A=30，旋转支点 B=20。',true),
-      _snap(t1,'A',{A:'active',B:'active'},'对 A=30 做右旋：B 上移，B 的右子（若有）归还给 A 的左子。',true),
-      _snap(t2,'B',{B:'visited'},'右旋完成，20 为新根，bf 全为 0，AVL 性质恢复！',false),
+      _snap(t0,'A',{},'初始 AVL 树 [50,30,70,20,40]，bf 均合法。即将插入 10，将触发 LL 失衡。',false),
+      _snap(t1,'A',{A:'active',B:'stacked',D:'stacked',F:'visited'},'插入 10：bf(50)=-2（失衡！），bf(30)=-1，bf(20)=-1。LL 型：失衡节点=50，旋转支点=30。',true),
+      _snap(t1,'A',{A:'active',B:'active'},'对 50 执行右旋：30 上移，30 的右子(40)转移给 50 的左子。',true),
+      _snap(t2,'B',{},'右旋完成！30 为新根，20(含10)居左，50(含40,70)居右，所有 |bf|≤1，AVL 性质恢复。',false),
     ];
   }
   if(cas==='rr'){
-    const t0=[{id:'A',val:10,right:'B',bf:1},{id:'B',val:20,bf:0}];
-    const t1=[{id:'A',val:10,right:'B',bf:2},{id:'B',val:20,right:'C',bf:1},{id:'C',val:30,bf:0}];
-    const t2=[{id:'B',val:20,left:'A',right:'C',bf:0},{id:'A',val:10,bf:0},{id:'C',val:30,bf:0}];
+    /* 初始5节点[20,10,50,40,60]，插入70 → RR失衡于20 */
+    const t0=[
+      {id:'A',val:20,left:'B',right:'C',bf:1},
+      {id:'B',val:10,bf:0},{id:'C',val:50,left:'D',right:'E',bf:0},
+      {id:'D',val:40,bf:0},{id:'E',val:60,bf:0}
+    ];
+    const t1=[
+      {id:'A',val:20,left:'B',right:'C',bf:2},
+      {id:'B',val:10,bf:0},{id:'C',val:50,left:'D',right:'E',bf:1},
+      {id:'D',val:40,bf:0},{id:'E',val:60,right:'F',bf:1},{id:'F',val:70,bf:0}
+    ];
+    /* 左旋后：C(50)为根，C.left=A，A.right=D(40) */
+    const t2=[
+      {id:'C',val:50,left:'A',right:'E',bf:0},
+      {id:'A',val:20,left:'B',right:'D',bf:0},{id:'E',val:60,right:'F',bf:1},
+      {id:'B',val:10,bf:0},{id:'D',val:40,bf:0},{id:'F',val:70,bf:0}
+    ];
     return[
-      _snap(t0,'A',{},'初始树 [10,20]，bf(10)=+1。插入 30 将触发 RR 失衡。',false),
-      _snap(t1,'A',{A:'active',B:'stacked',C:'visited'},'插入 30，bf(10)=+2（失衡！）。右右情形：失衡节点 A=10，旋转支点 B=20。',true),
-      _snap(t1,'A',{A:'active',B:'active'},'对 A=10 做左旋：B 上移，B 的左子（若有）归还给 A 的右子。',true),
-      _snap(t2,'B',{B:'visited'},'左旋完成，20 为新根，bf 全为 0，AVL 性质恢复！',false),
+      _snap(t0,'A',{},'初始 AVL 树 [20,10,50,40,60]，bf 均合法。即将插入 70，将触发 RR 失衡。',false),
+      _snap(t1,'A',{A:'active',C:'stacked',E:'stacked',F:'visited'},'插入 70：bf(20)=+2（失衡！），bf(50)=+1，bf(60)=+1。RR 型：失衡节点=20，旋转支点=50。',true),
+      _snap(t1,'A',{A:'active',C:'active'},'对 20 执行左旋：50 上移，50 的左子(40)转移给 20 的右子。',true),
+      _snap(t2,'C',{},'左旋完成！50 为新根，20(含10,40)居左，60(含70)居右，所有 |bf|≤1，AVL 性质恢复。',false),
     ];
   }
   if(cas==='lr'){
-    const t0=[{id:'A',val:30,left:'B',bf:-1},{id:'B',val:10,bf:0}];
-    const t1=[{id:'A',val:30,left:'B',bf:-2},{id:'B',val:10,right:'C',bf:1},{id:'C',val:20,bf:0}];
-    const t2=[{id:'A',val:30,left:'C',bf:-2},{id:'C',val:20,left:'B',bf:-1},{id:'B',val:10,bf:0}];
-    const t3=[{id:'C',val:20,left:'B',right:'A',bf:0},{id:'B',val:10,bf:0},{id:'A',val:30,bf:0}];
+    /* 初始5节点[60,20,70,10,40]，插入30 → LR失衡于60 */
+    const t0=[
+      {id:'A',val:60,left:'B',right:'C',bf:-1},
+      {id:'B',val:20,left:'D',right:'E',bf:0},
+      {id:'C',val:70,bf:0},{id:'D',val:10,bf:0},{id:'E',val:40,bf:0}
+    ];
+    const t1=[
+      {id:'A',val:60,left:'B',right:'C',bf:-2},
+      {id:'B',val:20,left:'D',right:'E',bf:1},
+      {id:'C',val:70,bf:0},{id:'D',val:10,bf:0},
+      {id:'E',val:40,left:'F',bf:-1},{id:'F',val:30,bf:0}
+    ];
+    /* 对B(20)左旋：E(40)上移，E.left=B，B.right=F(30) */
+    const t2=[
+      {id:'A',val:60,left:'E',right:'C',bf:-2},
+      {id:'E',val:40,left:'B',bf:-1},
+      {id:'B',val:20,left:'D',right:'F',bf:0},
+      {id:'D',val:10,bf:0},{id:'F',val:30,bf:0},{id:'C',val:70,bf:0}
+    ];
+    /* 对A(60)右旋：E(40)成新根，E.right=A，A.left=null */
+    const t3=[
+      {id:'E',val:40,left:'B',right:'A',bf:0},
+      {id:'B',val:20,left:'D',right:'F',bf:0},
+      {id:'A',val:60,right:'C',bf:1},
+      {id:'D',val:10,bf:0},{id:'F',val:30,bf:0},{id:'C',val:70,bf:0}
+    ];
     return[
-      _snap(t0,'A',{},'初始树 [30,10]，bf(30)=-1。插入 20（10 的右子）将触发 LR 失衡。',false),
-      _snap(t1,'A',{A:'active',B:'stacked',C:'visited'},'插入 20，bf(30)=-2（失衡！）。左右情形，需两次旋转。',true),
-      _snap(t1,'A',{B:'active',C:'active'},'第一步：对 B=10 左旋，将 LR 转化为 LL 情形。',true),
-      _snap(t2,'A',{A:'active',C:'stacked'},'转为 LL 情形（A=30 失衡，左子 C=20），再对 A 右旋。',true),
-      _snap(t3,'C',{C:'visited'},'右旋完成，20 为新根，10/30 各居左右，AVL 性质恢复！',false),
+      _snap(t0,'A',{},'初始 AVL 树 [60,20,70,10,40]，bf 均合法。即将插入 30，将触发 LR 失衡。',false),
+      _snap(t1,'A',{A:'active',B:'stacked',E:'stacked',F:'visited'},'插入 30：bf(60)=-2（失衡！），左子 20 的 bf=+1（右偏）→ LR 型，需两次旋转。',true),
+      _snap(t1,'A',{B:'active',E:'active'},'第一步：对 20 左旋，40 上移替换 20（LR→LL）。',true),
+      _snap(t2,'A',{A:'active',E:'stacked'},'已转为 LL 型：失衡节点=60，旋转支点=40。第二步：对 60 右旋。',true),
+      _snap(t3,'E',{},'两次旋转完成！40 为新根，20(含10,30)居左，60(含70)居右，AVL 性质恢复。',false),
     ];
   }
-  // rl
-  const t0=[{id:'A',val:10,right:'B',bf:1},{id:'B',val:30,bf:0}];
-  const t1=[{id:'A',val:10,right:'B',bf:2},{id:'B',val:30,left:'C',bf:-1},{id:'C',val:20,bf:0}];
-  const t2=[{id:'A',val:10,right:'C',bf:2},{id:'C',val:20,right:'B',bf:1},{id:'B',val:30,bf:0}];
-  const t3=[{id:'C',val:20,left:'A',right:'B',bf:0},{id:'A',val:10,bf:0},{id:'B',val:30,bf:0}];
+  /* rl: 初始5节点[20,10,50,30,60]，插入40 → RL失衡于20 */
+  const t0=[
+    {id:'A',val:20,left:'B',right:'C',bf:1},
+    {id:'B',val:10,bf:0},{id:'C',val:50,left:'D',right:'E',bf:0},
+    {id:'D',val:30,bf:0},{id:'E',val:60,bf:0}
+  ];
+  const t1=[
+    {id:'A',val:20,left:'B',right:'C',bf:2},
+    {id:'B',val:10,bf:0},{id:'C',val:50,left:'D',right:'E',bf:-1},
+    {id:'D',val:30,right:'F',bf:1},{id:'E',val:60,bf:0},{id:'F',val:40,bf:0}
+  ];
+  /* 对C(50)右旋：D(30)上移，D.right=C，C.left=F(40) */
+  const t2=[
+    {id:'A',val:20,left:'B',right:'D',bf:2},
+    {id:'B',val:10,bf:0},{id:'D',val:30,right:'C',bf:1},
+    {id:'C',val:50,left:'F',right:'E',bf:0},
+    {id:'F',val:40,bf:0},{id:'E',val:60,bf:0}
+  ];
+  /* 对A(20)左旋：D(30)成新根，D.left=A，A.right=null */
+  const t3=[
+    {id:'D',val:30,left:'A',right:'C',bf:0},
+    {id:'A',val:20,left:'B',bf:-1},{id:'C',val:50,left:'F',right:'E',bf:0},
+    {id:'B',val:10,bf:0},{id:'F',val:40,bf:0},{id:'E',val:60,bf:0}
+  ];
   return[
-    _snap(t0,'A',{},'初始树 [10,30]，bf(10)=+1。插入 20（30 的左子）将触发 RL 失衡。',false),
-    _snap(t1,'A',{A:'active',B:'stacked',C:'visited'},'插入 20，bf(10)=+2（失衡！）。右左情形，需两次旋转。',true),
-    _snap(t1,'A',{B:'active',C:'active'},'第一步：对 B=30 右旋，将 RL 转化为 RR 情形。',true),
-    _snap(t2,'A',{A:'active',C:'stacked'},'转为 RR 情形（A=10 失衡，右子 C=20），再对 A 左旋。',true),
-    _snap(t3,'C',{C:'visited'},'左旋完成，20 为新根，10/30 各居左右，AVL 性质恢复！',false),
+    _snap(t0,'A',{},'初始 AVL 树 [20,10,50,30,60]，bf 均合法。即将插入 40，将触发 RL 失衡。',false),
+    _snap(t1,'A',{A:'active',C:'stacked',D:'stacked',F:'visited'},'插入 40：bf(20)=+2（失衡！），右子 50 的 bf=-1（左偏）→ RL 型，需两次旋转。',true),
+    _snap(t1,'A',{C:'active',D:'active'},'第一步：对 50 右旋，30 上移替换 50（RL→RR）。',true),
+    _snap(t2,'A',{A:'active',D:'stacked'},'已转为 RR 型：失衡节点=20，旋转支点=30。第二步：对 20 左旋。',true),
+    _snap(t3,'D',{},'两次旋转完成！30 为新根，20(含10)居左，50(含40,60)居右，AVL 性质恢复。',false),
   ];
 }
 
 /* ── AVL 删除 ── */
 function buildAVLDelSteps(){
-  const t0=[{id:'R',val:50,left:'L',right:'RR',bf:-1},{id:'L',val:20,left:'LL',bf:-1},{id:'RR',val:70,bf:0},{id:'LL',val:10,bf:0}];
-  const t2=[{id:'R',val:50,left:'L',bf:-2},{id:'L',val:20,left:'LL',bf:-1},{id:'LL',val:10,bf:0}];
-  const t3=[{id:'L',val:20,left:'LL',right:'R',bf:0},{id:'LL',val:10,bf:0},{id:'R',val:50,bf:0}];
+  /* 初始7节点[50,30,70,20,40,60,10]，删除70→LL失衡于50 */
+  const t0=[
+    {id:'R',val:50,left:'L',right:'RN',bf:-1},
+    {id:'L',val:30,left:'LL',right:'LR',bf:-1},
+    {id:'RN',val:70,left:'RL',bf:-1},
+    {id:'LL',val:20,left:'LLL',bf:-1},
+    {id:'LR',val:40,bf:0},{id:'RL',val:60,bf:0},{id:'LLL',val:10,bf:0}
+  ];
+  /* 70用其左子60替换后 */
+  const t1=[
+    {id:'R',val:50,left:'L',right:'RL',bf:-2},
+    {id:'L',val:30,left:'LL',right:'LR',bf:-1},
+    {id:'RL',val:60,bf:0},
+    {id:'LL',val:20,left:'LLL',bf:-1},
+    {id:'LR',val:40,bf:0},{id:'LLL',val:10,bf:0}
+  ];
+  /* 对50右旋：L(30)为新根，L.right=R(50)，R.left=LR(40) */
+  const t2=[
+    {id:'L',val:30,left:'LL',right:'R',bf:0},
+    {id:'LL',val:20,left:'LLL',bf:-1},{id:'R',val:50,left:'LR',right:'RL',bf:0},
+    {id:'LLL',val:10,bf:0},{id:'LR',val:40,bf:0},{id:'RL',val:60,bf:0}
+  ];
   return[
-    _snap(t0,'R',{},'初始 AVL 树 [50,20,70,10]，各 bf ∈ {-1,0}。即将删除 70。',false),
-    _snap(t0,'R',{RR:'active'},'找到叶子节点 70，直接删除。',true),
-    _snap(t2,'R',{R:'active',L:'stacked'},'删后 bf(50)=-2（失衡！）。左子树高=2，右子树高=0，LL 情形。',true),
-    _snap(t2,'R',{R:'active',L:'active'},'对 50 做右旋，以 20 为支点。',true),
-    _snap(t3,'L',{L:'visited'},'右旋完成，20 为新根，10/50 各居左右，AVL 性质恢复！',false),
+    _snap(t0,'R',{},'初始 AVL 树（7节点），bf 均合法。即将删除节点 70（它有左子 60）。',false),
+    _snap(t0,'R',{RN:'active',RL:'stacked'},'70 有唯一左子 60，BST 删除：用 60 替换 70 的位置。',true),
+    _snap(t1,'R',{R:'active',RL:'active',L:'stacked'},'删除后 bf(50)=-2（失衡！），左子 30 的 bf=-1 → LL 型，对 50 执行右旋。',true),
+    _snap(t1,'R',{R:'active',L:'active'},'右旋：30 上移，30 的右子(40)转移给 50 的左子。',true),
+    _snap(t2,'L',{},'右旋完成！30 为新根，20(含10)居左，50(含40,60)居右，AVL 性质全部恢复！',false),
   ];
 }
 
 /* ── 红黑树 插入 ── */
 function buildRBInsSteps(cas){
   if(cas==='recolor'){
-    const t0=[{id:'G',val:20,left:'P',right:'U',color:'B'},{id:'P',val:10,color:'R'},{id:'U',val:30,color:'R'}];
-    const t1=[{id:'G',val:20,left:'P',right:'U',color:'B'},{id:'P',val:10,color:'R'},{id:'U',val:30,right:'N',color:'R'},{id:'N',val:35,color:'R'}];
-    const t2=[{id:'G',val:20,left:'P',right:'U',color:'R'},{id:'P',val:10,color:'B'},{id:'U',val:30,right:'N',color:'B'},{id:'N',val:35,color:'R'}];
-    const t3=[{id:'G',val:20,left:'P',right:'U',color:'B'},{id:'P',val:10,color:'B'},{id:'U',val:30,right:'N',color:'B'},{id:'N',val:35,color:'R'}];
+    /* 初始5节点：30(B)为根，10(B)和50(B)为子，5(R)和20(R)为孙。插入25 */
+    const t0=[
+      {id:'G',val:30,left:'U',right:'V',color:'B'},
+      {id:'U',val:10,left:'X',right:'P',color:'B'},
+      {id:'V',val:50,color:'B'},
+      {id:'X',val:5,color:'R'},{id:'P',val:20,color:'R'}
+    ];
+    const t1=[
+      {id:'G',val:30,left:'U',right:'V',color:'B'},
+      {id:'U',val:10,left:'X',right:'P',color:'B'},
+      {id:'V',val:50,color:'B'},
+      {id:'X',val:5,color:'R'},{id:'P',val:20,right:'N',color:'R'},{id:'N',val:25,color:'R'}
+    ];
+    /* 变色：P(20)→B，X(5)→B，U(10)→R；G(30)是根保持B */
+    const t2=[
+      {id:'G',val:30,left:'U',right:'V',color:'B'},
+      {id:'U',val:10,left:'X',right:'P',color:'R'},
+      {id:'V',val:50,color:'B'},
+      {id:'X',val:5,color:'B'},{id:'P',val:20,right:'N',color:'B'},{id:'N',val:25,color:'R'}
+    ];
     return[
-      _snap(t0,'G',{},'初始红黑树：20(B) 为根，10(R)、30(R) 为子节点。即将插入 35。',false),
-      _snap(t1,'G',{N:'active',U:'stacked'},'35 插入为 30 的右子（涂红）。父 30 也是红色 → 红红冲突！',true),
-      _snap(t1,'G',{N:'active',U:'stacked',P:'stacked'},'叔节点 10 是红色 → Case1：父叔变黑，祖父 20 变红，继续向上检查。',true),
-      _snap(t2,'G',{G:'active'},'祖父 20 变红但它是根，必须强制变黑（根始终为黑）。',true),
-      _snap(t3,'G',{G:'visited'},'根变黑，修复完成！无冲突，所有路径黑高相同。',false),
+      _snap(t0,'G',{},'初始红黑树（5节点）：30(B)为根，10(B)/50(B)为子，5(R)/20(R)为孙。黑高=2。即将插入 25。',false),
+      _snap(t1,'G',{N:'active',P:'stacked'},'25 插入为 20 的右子（涂红）。父 20(R) 也是红色 → 红红冲突！',true),
+      _snap(t1,'G',{N:'active',P:'stacked',X:'stacked',U:'rb-hl'},'叔节点 5(R) 是红色 → Case1（叔红）：父(20)和叔(5)变黑，祖父(10)变红，向上检查。',true),
+      _snap(t2,'G',{U:'active',G:'rb-hl'},'10 变红，但其父 30(B) 是黑色，无冲突。30 本身是根，始终为黑，无需额外处理。',true),
+      _snap(t2,'G',{},'修复完成！无红红冲突，所有路径黑高仍为 2，红黑树性质全部满足。',false),
     ];
   }
-  // 叔黑→旋转
-  const t0=[{id:'A',val:20,right:'B',color:'B'},{id:'B',val:30,color:'R'}];
-  const t1=[{id:'A',val:20,right:'B',color:'B'},{id:'B',val:30,right:'C',color:'R'},{id:'C',val:40,color:'R'}];
-  const t2=[{id:'B',val:30,left:'A',right:'C',color:'B'},{id:'A',val:20,color:'R'},{id:'C',val:40,color:'R'}];
+  /* 叔黑→旋转：初始4节点30(B),10(B),50(B),60(R)，插入70 → RR型 */
+  const t0=[
+    {id:'A',val:30,left:'B',right:'C',color:'B'},
+    {id:'B',val:10,color:'B'},{id:'C',val:50,right:'D',color:'B'},{id:'D',val:60,color:'R'}
+  ];
+  const t1=[
+    {id:'A',val:30,left:'B',right:'C',color:'B'},
+    {id:'B',val:10,color:'B'},{id:'C',val:50,right:'D',color:'B'},
+    {id:'D',val:60,right:'E',color:'R'},{id:'E',val:70,color:'R'}
+  ];
+  /* 对C(50)左旋，C↔D换色：D(60)成新子树根，D.left=C，C变红，D变黑 */
+  const t2=[
+    {id:'A',val:30,left:'B',right:'D',color:'B'},
+    {id:'B',val:10,color:'B'},{id:'D',val:60,left:'C',right:'E',color:'B'},
+    {id:'C',val:50,color:'R'},{id:'E',val:70,color:'R'}
+  ];
   return[
-    _snap(t0,'A',{},'初始树：20(B) 根，30(R) 右子。即将插入 40。',false),
-    _snap(t1,'A',{C:'active',B:'stacked'},'40 插入为 30 的右子（涂红）。父 30 是红色 → 红红冲突！',true),
-    _snap(t1,'A',{A:'active',B:'stacked'},'叔节点（20 的左子）为 NULL（黑），同侧（右右）→ Case3：对祖父 20 左旋。',true),
-    _snap(t2,'B',{B:'visited'},'左旋后 30 变黑为新根，20 变红居左，40 保持红居右。修复完成！',false),
+    _snap(t0,'A',{},'初始红黑树（4节点）：30(B)为根，10(B)/50(B)为子，60(R)为孙。黑高=2。即将插入 70。',false),
+    _snap(t1,'A',{E:'active',D:'stacked'},'70 插入为 60 的右子（涂红）。父 60(R) 也是红色 → 红红冲突！',true),
+    _snap(t1,'A',{C:'active',D:'stacked',E:'active'},'叔节点（50的左子=null）为黑，同侧（RR型）→ Case3：对祖父 50 左旋，并交换 50/60 的颜色。',true),
+    _snap(t2,'A',{},'左旋完成！60 变黑为新子树根，50 变红居左，70 保持红居右。无冲突，修复完成！',false),
   ];
 }
 
 /* ── 红黑树 删除 ── */
 function buildRBDelSteps(cas){
-  const t0=[{id:'R',val:20,left:'L',right:'RN',color:'B'},{id:'L',val:10,color:'B'},{id:'RN',val:30,right:'RR',color:'B'},{id:'RR',val:35,color:'R'}];
+  /* 初始6节点：30(B),10(B),50(B),5(R),20(R),70(R)，黑高=2 */
+  const t0=[
+    {id:'R',val:30,left:'L',right:'RN',color:'B'},
+    {id:'L',val:10,left:'LL',right:'LR',color:'B'},
+    {id:'RN',val:50,right:'RR',color:'B'},
+    {id:'LL',val:5,color:'R'},{id:'LR',val:20,color:'R'},{id:'RR',val:70,color:'R'}
+  ];
   if(cas==='leaf'){
-    const t2=[{id:'R',val:20,left:'L',right:'RN',color:'B'},{id:'L',val:10,color:'B'},{id:'RN',val:30,color:'B'}];
+    /* 删除红色叶子 20(R) */
+    const t2=[
+      {id:'R',val:30,left:'L',right:'RN',color:'B'},
+      {id:'L',val:10,left:'LL',color:'B'},
+      {id:'RN',val:50,right:'RR',color:'B'},
+      {id:'LL',val:5,color:'R'},{id:'RR',val:70,color:'R'}
+    ];
     return[
-      _snap(t0,'R',{},'初始红黑树，含红色叶子 35(R)。即将删除 35。',false),
-      _snap(t0,'R',{RR:'active'},'定位到目标 35（红色叶子节点）。',true),
-      _snap(t2,'R',{RN:'visited'},'删除红色叶子，不影响任何路径的黑高度，无需修复。✓',false),
+      _snap(t0,'R',{},'初始红黑树（6节点），黑高=2，所有性质满足。即将删除红色叶子 20。',false),
+      _snap(t0,'R',{LR:'active'},'定位到 20（红色叶子节点）。删除红色节点不改变任何路径的黑节点数。',true),
+      _snap(t2,'R',{L:'visited'},'直接删除 20，无需调整。所有路径黑高仍为 2，红黑树性质完全保持。✓',false),
     ];
   }
-  // 删黑节点（有红子）
-  const t2=[{id:'R',val:20,left:'L',right:'RR',color:'B'},{id:'L',val:10,color:'B'},{id:'RR',val:35,color:'B'}];
+  /* 删除黑色节点50(B)，其唯一子节点为70(R) */
+  const t2=[
+    {id:'R',val:30,left:'L',right:'RR',color:'B'},
+    {id:'L',val:10,left:'LL',right:'LR',color:'B'},
+    {id:'RR',val:70,color:'B'},
+    {id:'LL',val:5,color:'R'},{id:'LR',val:20,color:'R'}
+  ];
   return[
-    _snap(t0,'R',{},'初始红黑树。即将删除黑色节点 30（只有红色右子 35）。',false),
-    _snap(t0,'R',{RN:'active',RR:'stacked'},'30 是黑色，仅有一个红色子节点 35 → 将子提升并染黑。',true),
-    _snap(t2,'R',{RR:'visited'},'35 替换 30 的位置并变黑，黑高不变，无冲突。✓',false),
+    _snap(t0,'R',{},'初始红黑树（6节点），黑高=2，所有性质满足。即将删除黑色节点 50（它只有一个红色右子 70）。',false),
+    _snap(t0,'R',{RN:'active',RR:'stacked'},'50 是黑色，仅有一个红色子节点 70。方案：删除 50，将 70 提升并染黑，补偿黑高损失。',true),
+    _snap(t2,'R',{RR:'visited'},'70 提升至 50 的位置并染黑，右侧路径黑节点数不变（50→70），黑高仍为 2，无违规。✓',false),
   ];
 }
 
