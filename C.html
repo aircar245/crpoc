@@ -201,6 +201,10 @@
       <button class="tab-btn" onclick="switchTab('in',this)">中序（左→根→右）</button>
       <button class="tab-btn" onclick="switchTab('post',this)">后序（左→右→根）</button>
       <button class="tab-btn" onclick="switchTab('level',this)">层序（队列 BFS）</button>
+      <button class="tab-btn" onclick="switchTree2Tab('avl-ins',this)">AVL 插入</button>
+      <button class="tab-btn" onclick="switchTree2Tab('avl-del',this)">AVL 删除</button>
+      <button class="tab-btn" onclick="switchTree2Tab('rb-ins',this)">红黑树 插入</button>
+      <button class="tab-btn" onclick="switchTree2Tab('rb-del',this)">红黑树 删除</button>
     </div>
 
     <!-- 先序 -->
@@ -346,23 +350,8 @@ enqueue(&amp;q, root);
       </div>
     </div>
 
-  </div><!-- /chapter-tree -->
-
-  <!-- ─── 树（二）：AVL / 红黑树 ─── -->
-  <div id="chapter-tree2" class="chapter-wrap">
-    <div class="chapter-header">
-      <h3>树（二）</h3>
-      <p>AVL 平衡树与红黑树的插入、删除，观察旋转与变色如何维持平衡。</p>
-    </div>
-    <div class="tabs">
-      <button class="tab-btn active" onclick="switchTree2Tab('avl-ins',this)">AVL 插入</button>
-      <button class="tab-btn" onclick="switchTree2Tab('avl-del',this)">AVL 删除</button>
-      <button class="tab-btn" onclick="switchTree2Tab('rb-ins',this)">红黑树 插入</button>
-      <button class="tab-btn" onclick="switchTree2Tab('rb-del',this)">红黑树 删除</button>
-    </div>
-
     <!-- AVL 插入 -->
-    <div id="tab2-avl-ins" class="demo-wrap active">
+    <div id="tab2-avl-ins" class="demo-wrap">
       <div class="demo-main">
         <div class="demo-left">
           <div class="case-sel">
@@ -502,6 +491,15 @@ replace(node, child); <span class="cm">// 子替代父</span>
           <div class="log-area"><h4>操作日志</h4><div id="log2-rb-del"></div></div>
         </div>
       </div>
+    </div>
+
+  </div><!-- /chapter-tree -->
+
+  <!-- ─── 树（二）：待添加内容 ─── -->
+  <div id="chapter-tree2" class="chapter-wrap">
+    <div class="chapter-header">
+      <h3>树（二）</h3>
+      <p>待添加内容。</p>
     </div>
   </div><!-- /chapter-tree2 -->
 
@@ -1093,8 +1091,8 @@ function autoT2Demo(type){
   },SPEEDS['t2-'+type]||800);
 }
 function switchTree2Tab(type,btn){
-  document.querySelectorAll('#chapter-tree2 .demo-wrap').forEach(el=>el.classList.remove('active'));
-  document.querySelectorAll('#chapter-tree2 .tab-btn').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('#chapter-tree .demo-wrap').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('#chapter-tree .tab-btn').forEach(el=>el.classList.remove('active'));
   document.getElementById('tab2-'+type).classList.add('active');
   btn.classList.add('active');
   if(!T2STATE[type])startT2Demo(type);
